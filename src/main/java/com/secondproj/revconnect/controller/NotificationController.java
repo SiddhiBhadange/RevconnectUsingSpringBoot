@@ -35,7 +35,7 @@ public class NotificationController {
         dto.setCreatedAt(n.getCreatedAt());
         return dto;
     }
-    
+
     @PutMapping("/{id}/read")
     public String markRead(@PathVariable Long id) {
         notificationService.markAsRead(id);
