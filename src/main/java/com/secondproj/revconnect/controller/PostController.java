@@ -25,6 +25,7 @@ public class PostController {
     @Autowired
     private CommentRepository commentRepository;
 
+    // CREATE POST
     @PostMapping
     public PostResponseDTO createPost(
             @AuthenticationPrincipal User user,
@@ -63,15 +64,6 @@ public class PostController {
         return dto;
     }
 
-    // CREATE POST
-    @PostMapping
-    public Post createPost(
-            @AuthenticationPrincipal User user,
-            @RequestParam String content,
-            @RequestParam(required = false) String hashtags
-    ) {
-        return postService.createPost(user, content, hashtags);
-    }
 
     // DELETE POST
     @DeleteMapping("/{postId}")

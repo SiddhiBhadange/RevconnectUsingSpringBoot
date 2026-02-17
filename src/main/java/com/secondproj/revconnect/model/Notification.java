@@ -13,6 +13,7 @@ public class Notification {
 
     private String type; // LIKE, COMMENT, FOLLOW, CONNECTION
     private String message;
+    @Column(name = "is_read")
     private boolean read;
     private LocalDateTime createdAt;
 
