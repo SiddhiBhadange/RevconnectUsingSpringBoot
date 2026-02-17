@@ -1,0 +1,21 @@
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+}
+
+mat-card {
+  width: 380px;
+  padding: 20px;
+}
+
+.full-width {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.switch {
+  margin-top: 10px;
+  text-align: center;
+}
