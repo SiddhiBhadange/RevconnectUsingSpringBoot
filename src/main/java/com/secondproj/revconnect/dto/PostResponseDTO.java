@@ -89,4 +89,5 @@ public class PostResponseDTO {
     public void setCommentCount(long commentCount) {
         this.commentCount = commentCount;
     }
+
 }
