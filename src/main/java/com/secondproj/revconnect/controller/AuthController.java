@@ -4,8 +4,10 @@ import com.secondproj.revconnect.dto.LoginRequestDTO;
 import com.secondproj.revconnect.dto.TokenResponseDTO;
 import com.secondproj.revconnect.model.Role;
 import com.secondproj.revconnect.model.User;
+import com.secondproj.revconnect.security.JwtUtil;
 import com.secondproj.revconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,10 @@ public class AuthController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtUtil jwtUtil;
 
     // REGISTER
     @PostMapping("/register")
