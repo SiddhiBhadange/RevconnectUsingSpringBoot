@@ -1,5 +1,5 @@
 package com.secondproj.revconnect.dto;
-import javax.management.relation.Role;
+import com.secondproj.revconnect.model.Role;
 import java.util.Set;
 
 public class UserResponseDTO {

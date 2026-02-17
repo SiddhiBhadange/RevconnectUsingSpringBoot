@@ -107,9 +107,13 @@ public class User implements UserDetails {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public Set<javax.management.relation.Role> getRoles() { return roles; }
-    public void setRoles(Set<Role> roles) { this.roles = roles; }
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
     // ---------- Spring Security ----------
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

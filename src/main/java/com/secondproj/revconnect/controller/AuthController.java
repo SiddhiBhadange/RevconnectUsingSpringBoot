@@ -1,9 +1,13 @@
 package com.secondproj.revconnect.controller;
 
+import com.secondproj.revconnect.dto.LoginRequestDTO;
+import com.secondproj.revconnect.dto.TokenResponseDTO;
 import com.secondproj.revconnect.model.Role;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -25,4 +29,19 @@ public class AuthController {
     }
 
     // LOGIN will be handled by JWT (next step)
+    @PostMapping("/login")
+    public TokenResponseDTO login(@RequestBody LoginRequestDTO dto) {
+
+        Authentication authentication =
+                authenticationManager.authenticate(
+                        new UsernamePasswordAuthenticationToken(
+                                dto.getUsernameOrEmail(),
+                                dto.getPassword()
+                        )
+                );
+
+        String token = jwtUtil.generateToken(dto.getUsernameOrEmail());
+
+        return new TokenResponseDTO(token);
+    }
 }
