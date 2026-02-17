@@ -1,1 +1,26 @@
-<p>login works!</p>
+<div class="auth-container">
+  <mat-card>
+    <mat-card-title>Login</mat-card-title>
+
+    <form>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" />
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" class="full-width">
+        Login
+      </button>
+
+      <p class="switch">
+        Don't have an account?
+        <a routerLink="/auth/register">Register</a>
+      </p>
+    </form>
+  </mat-card>
+</div>

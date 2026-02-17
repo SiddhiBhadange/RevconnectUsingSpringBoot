@@ -6,7 +6,7 @@
 }
 
 mat-card {
-  width: 380px;
+ width: 400px;  
   padding: 20px;
 }
 
@@ -18,4 +18,8 @@ mat-card {
 .switch {
   margin-top: 10px;
   text-align: center;
+}
+mat-form-field {
+  width: 100%;
+  margin-bottom: 15px;
 }
