@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { NavbarComponent } from './core/navbar/navbar.component';
-
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -19,7 +19,8 @@ import { NavbarComponent } from './core/navbar/navbar.component';
     AppRoutingModule,
     BrowserAnimationsModule,
      MatToolbarModule,   // <-- required for <mat-toolbar>
-    MatButtonModule    // <-- required for <button mat-raised-button>
+    MatButtonModule ,   // <-- required for <button mat-raised-button>
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
