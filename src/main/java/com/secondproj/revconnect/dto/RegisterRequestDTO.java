@@ -8,7 +8,6 @@ public class RegisterRequestDTO {
     private String email;
     private String username;
     private String password;
-    private Role role;
 
     public RegisterRequestDTO() {}
 
@@ -36,11 +35,4 @@ public class RegisterRequestDTO {
         this.password = password;
     }
 
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
 }
