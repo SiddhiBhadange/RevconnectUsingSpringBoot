@@ -7,14 +7,6 @@ import { AuthService } from '../../features/auth/auth.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-
-  isLoggedIn = false;
-
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
-
   
   checkLogin() {
     this.authService.getCurrentUser().subscribe({
@@ -22,18 +14,28 @@ export class NavbarComponent implements OnInit {
       error: () => this.isLoggedIn = false
     });
   }
- ngOnInit() {
-    // 🔥 subscribe to state
-    this.authService.isLoggedIn$.subscribe(
-      status => this.isLoggedIn = status
-    );
-  }
 
+  
+ isLoggedIn = false;
+
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {
+    this.authService.isLoggedIn$.subscribe(status => {
+      this.isLoggedIn = status;
+    });
+  }
+  ngOnInit(): void {
+    this.checkLogin();
+  }
 
   logout() {
     this.authService.logout().subscribe(() => {
-      this.isLoggedIn = false;
       this.router.navigate(['/auth/login']);
     });
   }
-}
+  }
+ 
+
+

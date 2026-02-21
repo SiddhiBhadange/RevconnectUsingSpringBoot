@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import { tap, catchError } from 'rxjs/operators';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -9,7 +10,7 @@ export class AuthService {
 
   // 🔥 ADD THIS (missing in your code)
   private loggedIn = new BehaviorSubject<boolean>(false);
-  isLoggedIn$ = this.loggedIn.asObservable();
+isLoggedIn$ = this.loggedIn.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -43,4 +44,21 @@ export class AuthService {
   getCurrentUser() {
      return this.http.get( 'http://localhost:8080/api/users/me',
        { withCredentials: true } ); }
+
+       checkAuth() {
+    return this.http.get(
+      'http://localhost:8080/api/users/me',
+      { withCredentials: true }
+    ).pipe(
+      tap(() => this.loggedIn.next(true)),
+      catchError(() => {
+        this.loggedIn.next(false);
+        return of(null);
+      })
+    );
+  }
 }
+
+
+
+

@@ -19,4 +19,11 @@ export class PostService {
       { withCredentials: true }
     );
   }
+  toggleLike(postId: number) {
+  return this.http.post(
+    `http://localhost:8080/api/likes/${postId}`,
+    {},
+    { withCredentials: true }
+  );
+}
 }

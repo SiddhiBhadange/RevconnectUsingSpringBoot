@@ -1,15 +1,57 @@
-<h2>Feed</h2>
-<!-- Create Post -->
-<div class="create-post">
-  <textarea [(ngModel)]="newPost" placeholder="What's on your mind?"></textarea>
-  <button (click)="createPost()">Post</button>
-</div>
+<div class="feed-container">
 
-<hr>
+  <h2>Feed</h2>
 
-<!-- Show Posts -->
-<div *ngFor="let post of posts" class="post-card">
-  <h4>{{ post.user?.username }}</h4>
-  <p>{{ post.content }}</p>
-  <small>{{ post.createdAt }}</small>
+  <!-- Create Post -->
+  <div class="create-post">
+    <textarea [(ngModel)]="newPost" placeholder="What's on your mind?"></textarea>
+    <button (click)="createPost()">Post</button>
+  </div>
+
+  <hr>
+
+  <!-- Show Posts -->
+  <div *ngFor="let post of posts" class="post-card">
+    <h4>{{ post.username }}</h4>
+    <p>{{ post.content }}</p>
+
+    <small>{{ post.createdAt | date:'short' }}</small>
+
+    <div class="post-actions">
+     <span 
+  (click)="toggleLike(post)" 
+  [class.liked]="post.likedByCurrentUser"
+  class="like-btn"
+>
+  ❤️ {{ post.likeCount }}
+</span>
+      💬 {{ post.commentCount }}
+    </div>
+      <!-- Comment Section -->
+  <div class="comment-section">
+
+    <button (click)="toggleComments(post)">
+      View Comments
+    </button>
+
+    <div *ngIf="post.showComments">
+
+      <div *ngFor="let comment of post.comments">
+        <strong>{{ comment.username }}</strong>
+        <p>{{ comment.content }}</p>
+      </div>
+
+      <input [(ngModel)]="post.newComment"
+             placeholder="Write a comment..." />
+
+      <button (click)="addComment(post)">
+        Comment
+      </button>
+
+
+
+  </div>
+    </div>
+
+
 </div>
