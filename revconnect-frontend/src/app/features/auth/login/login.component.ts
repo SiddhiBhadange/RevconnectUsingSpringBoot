@@ -35,12 +35,21 @@ export class LoginComponent {
   this.authService.login(usernameOrEmail, password).subscribe({
     next: () => {
         this.success = 'Login successful!';
-      this.router.navigate(['/']);
+      this.router.navigate(['/dashboard']);
     },
-    error: (err) => {
-    console.error('Login error:', err);
-    this.error = err.error || 'Login failed';
+  error: (err) => {
+  console.error('Login error:', err);
+
+  if (err.status === 401) {
+    this.error = 'Invalid username or password';
+  } else if (err.status === 403) {
+    this.error = 'Access denied';
+  } else if (err.error?.message) {
+    this.error = err.error.message;
+  } else {
+    this.error = 'Login failed. Please try again.';
   }
+}
   });
 }
   }

@@ -1,10 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private API_URL = 'http://localhost:8080/api/auth';
+
+  // 🔥 ADD THIS (missing in your code)
+  private loggedIn = new BehaviorSubject<boolean>(false);
+  isLoggedIn$ = this.loggedIn.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -12,7 +17,9 @@ export class AuthService {
     return this.http.post(
       `${this.API_URL}/login`,
       { usernameOrEmail, password },
-      { withCredentials: true } // 🔥 REQUIRED
+      { withCredentials: true }
+    ).pipe(
+      tap(() => this.loggedIn.next(true))   // 🔥 updates navbar
     );
   }
 
@@ -29,6 +36,11 @@ export class AuthService {
       `${this.API_URL}/logout`,
       {},
       { withCredentials: true }
+    ).pipe(
+      tap(() => this.loggedIn.next(false))  // 🔥 update on logout
     );
   }
+  getCurrentUser() {
+     return this.http.get( 'http://localhost:8080/api/users/me',
+       { withCredentials: true } ); }
 }

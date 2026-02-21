@@ -1,0 +1,15 @@
+<h2>Feed</h2>
+<!-- Create Post -->
+<div class="create-post">
+  <textarea [(ngModel)]="newPost" placeholder="What's on your mind?"></textarea>
+  <button (click)="createPost()">Post</button>
+</div>
+
+<hr>
+
+<!-- Show Posts -->
+<div *ngFor="let post of posts" class="post-card">
+  <h4>{{ post.user?.username }}</h4>
+  <p>{{ post.content }}</p>
+  <small>{{ post.createdAt }}</small>
+</div>
