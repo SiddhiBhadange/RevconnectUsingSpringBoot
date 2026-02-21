@@ -1,4 +1,5 @@
 package com.secondproj.revconnect.repository;
+import com.secondproj.revconnect.dto.UserResponseDTO;
 import com.secondproj.revconnect.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,4 +16,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
 
     boolean existsByUsername(String username);
+
+
+    UserResponseDTO getUserById(Long userId);
 }

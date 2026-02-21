@@ -1,5 +1,6 @@
 package com.secondproj.revconnect.service;
 
+import com.secondproj.revconnect.dto.UserResponseDTO;
 import com.secondproj.revconnect.model.Role;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.UserRepository;
@@ -56,5 +57,9 @@ public class UserService {
 
     public User updateProfile(User user) {
         return userRepository.save(user);
+    }
+
+    public UserResponseDTO getUserById(Long userId) {
+        return userRepository.getUserById(userId);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -40,5 +41,13 @@ public class PostService {
         }
 
         postRepository.delete(post);
+    }
+
+    public List<Post> getAllPosts() {
+        return postRepository.findAllByOrderByCreatedAtDesc();
+    }
+
+    public List<Post> getPostsByUserId(Long userId) {
+        return postRepository.getPostsByUserId(userId);
     }
 }

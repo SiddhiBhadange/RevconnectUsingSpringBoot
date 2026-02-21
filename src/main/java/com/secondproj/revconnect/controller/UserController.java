@@ -29,6 +29,11 @@ public class UserController {
         return mapToUserDTO(user);
     }
 
+    @GetMapping("/api/users/me")
+    public UserResponseDTO getCurrentUser(@AuthenticationPrincipal User user) {
+        return new UserResponseDTO(user.getId(), user.getUsername());
+    }
+
     @PutMapping("/me")
     public UserResponseDTO updateProfile(
             @AuthenticationPrincipal User user,
@@ -57,5 +62,9 @@ public class UserController {
         dto.setWebsite(user.getWebsite());
 
         return dto;
+    }
+    @GetMapping("/{userId}")
+    public UserResponseDTO getUser(@PathVariable Long userId) {
+        return userService.getUserById(userId);
     }
 }

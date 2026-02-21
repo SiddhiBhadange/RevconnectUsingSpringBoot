@@ -10,8 +10,10 @@ import com.secondproj.revconnect.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import java.util.stream.Collectors;
 
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/posts")
@@ -19,23 +21,34 @@ public class PostController {
 
     @Autowired
     private PostService postService;
+
     @Autowired
     private LikeRepository likeRepository;
 
     @Autowired
     private CommentRepository commentRepository;
 
-    // CREATE POST
+    // ✅ CREATE POST
     @PostMapping
     public PostResponseDTO createPost(
             @AuthenticationPrincipal User user,
             @RequestBody PostRequestDTO dto
     ) {
         Post post = postService.createPost(user, dto.getContent(), dto.getHashtags());
-
         return mapToPostDTO(post);
     }
 
+    // ✅ GET ALL POSTS (Feed)
+    @GetMapping
+    public List<PostResponseDTO> getAllPosts() {
+
+        return postService.getAllPosts()
+                .stream()
+                .map(this::mapToPostDTO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    // ✅ GET MY POSTS
     @GetMapping("/me")
     public List<PostResponseDTO> myPosts(@AuthenticationPrincipal User user) {
 
@@ -45,6 +58,17 @@ public class PostController {
                 .toList();
     }
 
+    // ✅ DELETE POST
+    @DeleteMapping("/{postId}")
+    public String deletePost(
+            @AuthenticationPrincipal User user,
+            @PathVariable Long postId
+    ) {
+        postService.deletePost(postId, user);
+        return "Post deleted successfully";
+    }
+
+    // 🔥 DTO Mapper (must be inside class)
     private PostResponseDTO mapToPostDTO(Post post) {
 
         long likeCount = likeRepository.countByPost(post);
@@ -63,15 +87,11 @@ public class PostController {
 
         return dto;
     }
-
-
-    // DELETE POST
-    @DeleteMapping("/{postId}")
-    public String deletePost(
-            @AuthenticationPrincipal User user,
-            @PathVariable Long postId
-    ) {
-        postService.deletePost(postId, user);
-        return "Post deleted successfully";
+    @GetMapping("/user/{userId}")
+    public List<PostResponseDTO> getUserPosts(@PathVariable Long userId) {
+        return postService.getPostsByUserId(userId)
+                .stream()
+                .map(this::mapToPostDTO)
+                .toList();
     }
 }
