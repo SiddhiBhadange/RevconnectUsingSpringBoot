@@ -71,7 +71,7 @@ public class AuthController {
 
             response.addCookie(cookie);
 
-            return ResponseEntity.ok().body("Login successful");
+            return ResponseEntity.ok().build();
 
         } catch (Exception e) {
             return ResponseEntity
