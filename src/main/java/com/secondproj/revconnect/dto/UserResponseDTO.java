@@ -15,6 +15,7 @@ public class UserResponseDTO {
     private String location;
     private String website;
 
+
     public UserResponseDTO() {}
 
     public UserResponseDTO(Long id, String username) {

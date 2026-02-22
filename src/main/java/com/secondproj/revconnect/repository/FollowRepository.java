@@ -1,3 +1,4 @@
+
 package com.secondproj.revconnect.repository;
 
 import com.secondproj.revconnect.model.Follow;
@@ -9,11 +10,15 @@ import java.util.Optional;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
 
+    boolean existsByFollowerAndFollowing(User follower, User following);
+
     Optional<Follow> findByFollowerAndFollowing(User follower, User following);
 
-    List<Follow> findByFollower(User follower);
+    List<Follow> findByFollowing(User user);   // followers
 
-    List<Follow> findByFollowing(User following);
+    List<Follow> findByFollower(User user);    // following
 
-    long countByFollowing(User user); // followers count
+    long countByFollowing(User user);
+
+    long countByFollower(User user);
 }

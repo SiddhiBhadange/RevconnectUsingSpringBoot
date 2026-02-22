@@ -6,6 +6,8 @@ import com.secondproj.revconnect.repository.FollowRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class FollowService {
 
@@ -14,8 +16,8 @@ public class FollowService {
 
     public void follow(User follower, User following) {
 
-        if (followRepository.findByFollowerAndFollowing(follower, following).isPresent()) {
-            throw new RuntimeException("Already following");
+        if (followRepository.existsByFollowerAndFollowing(follower, following)) {
+            return;
         }
 
         Follow follow = new Follow();
@@ -27,9 +29,27 @@ public class FollowService {
 
     public void unfollow(User follower, User following) {
 
-        Follow follow = followRepository.findByFollowerAndFollowing(follower, following)
-                .orElseThrow(() -> new RuntimeException("Not following"));
+        followRepository.findByFollowerAndFollowing(follower, following)
+                .ifPresent(followRepository::delete);
+    }
 
-        followRepository.delete(follow);
+    public long getFollowersCount(User user) {
+        return followRepository.countByFollowing(user);
+    }
+
+    public long getFollowingCount(User user) {
+        return followRepository.countByFollower(user);
+    }
+
+    public List<Follow> getFollowers(User user) {
+        return followRepository.findByFollowing(user);
+    }
+
+    public List<Follow> getFollowing(User user) {
+        return followRepository.findByFollower(user);
+    }
+
+    public boolean isFollowing(User follower, User following) {
+        return followRepository.existsByFollowerAndFollowing(follower, following);
     }
 }

@@ -59,7 +59,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserResponseDTO getUserById(Long userId) {
-        return userRepository.getUserById(userId);
+    public Optional<User> getUserById(Long userId) {
+        return userRepository.findById(userId);
     }
 }
