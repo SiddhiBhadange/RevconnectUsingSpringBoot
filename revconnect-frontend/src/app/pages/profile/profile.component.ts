@@ -12,25 +12,43 @@ export class ProfileComponent implements OnInit {
   currentUser: any;
   user: any;
   posts: any[] = [];
-  isEditing = false;
-  // 🔥 ADD THESE
+
   activeTab: string = 'about';
+
   followersCount: number = 0;
   followingCount: number = 0;
+  isFollowing: boolean = false;
+
+  showFollowersModal: boolean = false;
+  showFollowingModal: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private http: HttpClient
   ) {}
 
+  ngOnInit(): void {
 
-
-  loadCurrentUser() {
+    // Load logged-in user first
     this.http.get<any>('http://localhost:8080/api/users/me', {
       withCredentials: true
-    }).subscribe(user => {
-      this.user = user;
-      this.loadPosts(user.id);
+    }).subscribe(me => {
+
+      this.currentUser = me;
+
+      // Check route param
+      this.route.paramMap.subscribe(params => {
+        const id = params.get('id');
+
+        if (id) {
+          this.loadUserById(id);
+        } else {
+          this.user = me;
+          this.loadPosts(me.id);
+          this.loadFollowData();   // 🔥 important
+        }
+      });
+
     });
   }
 
@@ -40,6 +58,7 @@ export class ProfileComponent implements OnInit {
     }).subscribe(user => {
       this.user = user;
       this.loadPosts(user.id);
+      this.loadFollowData();
     });
   }
 
@@ -49,48 +68,72 @@ export class ProfileComponent implements OnInit {
       { withCredentials: true }
     ).subscribe(posts => this.posts = posts);
   }
-ngOnInit(): void {
-  // First get logged-in user
-  this.http.get<any>('http://localhost:8080/api/users/me', {
-    withCredentials: true
-  }).subscribe(me => {
 
-    this.currentUser = me;
+  loadFollowData() {
 
-    // Then check route
-    this.route.paramMap.subscribe(params => {
-      const id = params.get('id');
+    if (!this.user?.id) return;
 
-      if (id) {
-        this.loadUserById(id);
-      } else {
-        this.user = me; // own profile
-        this.loadPosts(me.id);
-      }
-    });
+    // Followers count
+    this.http.get<number>(
+      `http://localhost:8080/api/follow/${this.user.id}/followers/count`,
+      { withCredentials: true }
+    ).subscribe(count => this.followersCount = count);
 
-  });
-}  loadProfile() {
-    this.http.get('http://localhost:8080/api/users/me', {
-      withCredentials: true
-    }).subscribe(res => this.user = res);
+    // Following count
+    this.http.get<number>(
+      `http://localhost:8080/api/follow/${this.user.id}/following/count`,
+      { withCredentials: true }
+    ).subscribe(count => this.followingCount = count);
+
+    // Check follow state (only if not own profile)
+    if (!this.isOwnProfile()) {
+      this.http.get<boolean>(
+        `http://localhost:8080/api/follow/${this.user.id}/is-following`,
+        { withCredentials: true }
+      ).subscribe(status => this.isFollowing = status);
+    }
   }
 
-  enableEdit() {
-    this.isEditing = true;
+  followUser() {
+
+    if (!this.user?.id) return;
+
+    this.http.post(
+      `http://localhost:8080/api/follow/${this.user.id}`,
+      {},
+      { withCredentials: true }
+    ).subscribe(() => {
+      this.isFollowing = true;
+      this.followersCount++;
+    });
+  }
+
+  unfollowUser() {
+
+    if (!this.user?.id) return;
+
+    this.http.delete(
+      `http://localhost:8080/api/follow/${this.user.id}`,
+      { withCredentials: true }
+    ).subscribe(() => {
+      this.isFollowing = false;
+      this.followersCount--;
+    });
   }
 
   saveProfile() {
-    this.http.put('http://localhost:8080/api/users/me',
+    this.http.put(
+      'http://localhost:8080/api/users/me',
       this.user,
       { withCredentials: true }
     ).subscribe(() => {
-      this.isEditing = false;
-      this.loadProfile();
+      this.activeTab = 'about';
     });
   }
+
   isOwnProfile(): boolean {
-  return this.currentUser && this.user &&
-         this.currentUser.id === this.user.id;
-}
+    return this.currentUser &&
+           this.user &&
+           this.currentUser.id === this.user.id;
+  }
 }
