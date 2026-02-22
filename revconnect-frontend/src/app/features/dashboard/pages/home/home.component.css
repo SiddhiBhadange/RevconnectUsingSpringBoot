@@ -192,3 +192,11 @@ h2 {
   border-radius: 6px;
   margin-top: 8px;
 }
+.profile-link {
+  cursor: pointer;
+  color: #4361ee;
+}
+
+.profile-link:hover {
+  text-decoration: underline;
+}

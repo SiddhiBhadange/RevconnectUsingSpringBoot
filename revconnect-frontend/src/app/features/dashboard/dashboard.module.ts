@@ -12,12 +12,13 @@ import { CommentService } from './services/comment.service';
   imports: [
     CommonModule,
     DashboardRoutingModule,
-    FormsModule
+    FormsModule,
+    CommonModule
   ]
 })
 export class DashboardModule {
   constructor(private commentService: CommentService) {}
-  
+
   toggleComments(post: any) {
   post.showComments = !post.showComments;
 

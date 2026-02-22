@@ -12,7 +12,9 @@
 
   <!-- Show Posts -->
   <div *ngFor="let post of posts" class="post-card">
-    <h4>{{ post.username }}</h4>
+  <h4 [routerLink]="['/dashboard/profile', post.userId]" class="profile-link">
+  {{ post.username }}
+</h4>
     <p>{{ post.content }}</p>
 
     <small>{{ post.createdAt | date:'short' }}</small>
@@ -27,7 +29,7 @@
 </span>
       💬 {{ post.commentCount }}
     </div>
-      <!-- Comment Section -->
+     <!-- Comment Section -->
   <div class="comment-section">
 
     <button (click)="toggleComments(post)">
@@ -47,11 +49,6 @@
       <button (click)="addComment(post)">
         Comment
       </button>
-
-
-
+ </div>
   </div>
-    </div>
-
-
-</div>
+  </div>

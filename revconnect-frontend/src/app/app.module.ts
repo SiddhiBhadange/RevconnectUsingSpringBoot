@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { NavbarComponent } from './core/navbar/navbar.component';
 import { HttpClientModule } from '@angular/common/http';
 import { ProfileComponent } from './pages/profile/profile.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ProfileComponent } from './pages/profile/profile.component';
     BrowserAnimationsModule,
      MatToolbarModule,   // <-- required for <mat-toolbar>
     MatButtonModule ,   // <-- required for <button mat-raised-button>
-    HttpClientModule
+    HttpClientModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

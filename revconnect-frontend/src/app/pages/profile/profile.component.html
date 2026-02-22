@@ -1,1 +1,72 @@
-<p>profile works!</p>
+<div class="profile-wrapper" *ngIf="user">
+
+  <!-- COVER SECTION -->
+  <div class="cover-section">
+    <div class="cover-bg"></div>
+
+    <div class="profile-header">
+      <img *ngIf="user?.profilePictureUrl"
+           [src]="user?.profilePictureUrl"
+           class="profile-img" />
+
+      <div class="profile-info">
+        <h2>{{ user?.name || user?.username }}</h2>
+        <p class="headline">{{ user?.bio || 'No headline added' }}</p>
+        <p class="location">{{ user?.location || 'Location not added' }}</p>
+
+        <!-- Stats -->
+        <div class="stats">
+          <span><strong>{{ followersCount || 0 }}</strong> Followers</span>
+          <span><strong>{{ followingCount || 0 }}</strong> Following</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button [class.active]="activeTab === 'about'"
+            (click)="activeTab = 'about'">About</button>
+
+    <button [class.active]="activeTab === 'posts'"
+            (click)="activeTab = 'posts'">Posts</button>
+
+    <button *ngIf="isOwnProfile()"
+            [class.active]="activeTab === 'edit'"
+            (click)="activeTab = 'edit'">Edit</button>
+  </div>
+
+  <!-- TAB CONTENT -->
+  <div class="tab-content">
+
+    <!-- ABOUT TAB -->
+    <div *ngIf="activeTab === 'about'">
+      <p><strong>Email:</strong> {{ user?.email }}</p>
+      <p><strong>Website:</strong> {{ user?.website || 'Not added' }}</p>
+      <p><strong>Role:</strong> {{ user?.roles }}</p>
+    </div>
+
+    <!-- POSTS TAB -->
+    <div *ngIf="activeTab === 'posts'">
+      <div class="post-card" *ngFor="let post of posts">
+        <p>{{ post.content }}</p>
+        <small>{{ post.createdAt | date:'medium' }}</small>
+      </div>
+    </div>
+
+    <!-- EDIT TAB -->
+    <div *ngIf="activeTab === 'edit'">
+
+      <input [(ngModel)]="user.name" placeholder="Name" />
+      <input [(ngModel)]="user.bio" placeholder="Headline" />
+      <input [(ngModel)]="user.location" placeholder="Location" />
+      <input [(ngModel)]="user.website" placeholder="Website" />
+      <input [(ngModel)]="user.profilePictureUrl" placeholder="Profile Image URL" />
+
+      <button (click)="saveProfile()">Save Changes</button>
+
+    </div>
+
+  </div>
+
+</div>
