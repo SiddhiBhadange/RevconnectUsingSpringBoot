@@ -41,7 +41,11 @@ public class CommentController {
 
     // VIEW COMMENTS
     @GetMapping("/{postId}")
-    public List<Comment> getComments(@PathVariable Long postId) {
-        return commentService.getComments(postId);
+    public List<CommentResponseDTO> getComments(@PathVariable Long postId) {
+
+        return commentService.getComments(postId)
+                .stream()
+                .map(this::mapToCommentDTO)
+                .toList();
     }
 }

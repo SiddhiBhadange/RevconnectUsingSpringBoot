@@ -34,11 +34,11 @@ public class CommentService {
         return commentRepository.save(comment);
     }
 
-    public List<Comment> getComments(Long postId) {
 
+    public List<Comment> getComments(Long postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        return commentRepository.findByPost(post);
+        return commentRepository.findByPostIdOrderByCreatedAtDesc(postId);
     }
 }
