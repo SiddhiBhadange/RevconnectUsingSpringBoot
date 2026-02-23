@@ -17,23 +17,38 @@ public class LikeService {
     @Autowired
     private PostRepository postRepository;
 
-    public void likePost(User user, Long postId) {
+    @Autowired
+    private NotificationService  notificationService;
+    public boolean likePost(User user, Long postId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        if (likeRepository.findByUserAndPost(user, post).isPresent()) {
-            throw new RuntimeException("Already liked");
+        if (likeRepository.existsByUserAndPost(user, post)) {
+            return false;
         }
 
         Like like = new Like();
         like.setUser(user);
         like.setPost(post);
-
         likeRepository.save(like);
+
+        post.setLikeCount(post.getLikeCount() + 1);
+        postRepository.save(post);
+
+        // 🔥 send notification only on like
+        if (!post.getUser().getId().equals(user.getId())) {
+            notificationService.createNotification(
+                    post.getUser(),
+                    "LIKE",
+                    user.getUsername() + " liked your post"
+            );
+        }
+
+        return true;
     }
 
-    public void unlikePost(User user, Long postId) {
+    public boolean unlikePost(User user, Long postId) {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -42,5 +57,10 @@ public class LikeService {
                 .orElseThrow(() -> new RuntimeException("Like not found"));
 
         likeRepository.delete(like);
+
+        post.setLikeCount(post.getLikeCount() - 1);
+        postRepository.save(post);
+
+        return true;
     }
 }

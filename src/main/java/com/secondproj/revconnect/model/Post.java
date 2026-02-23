@@ -18,9 +18,15 @@ public class Post {
     private boolean pinned;
     private LocalDateTime createdAt;
 
+
+
+    @Column(nullable = false)
+    private int likeCount = 0;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
 
     public Post() {}
 
@@ -41,4 +47,11 @@ public class Post {
 
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
+    public int getLikeCount() {
+        return likeCount;
+    }
+
+    public void setLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
 }
