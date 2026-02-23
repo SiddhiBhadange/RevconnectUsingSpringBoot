@@ -15,6 +15,9 @@ public class PostResponseDTO {
 
     private long likeCount;
     private long commentCount;
+    private boolean likedByCurrentUser;
+
+
 
     public PostResponseDTO() {}
 
@@ -88,6 +91,13 @@ public class PostResponseDTO {
 
     public void setCommentCount(long commentCount) {
         this.commentCount = commentCount;
+    }
+    public boolean isLikedByCurrentUser() {
+        return likedByCurrentUser;
+    }
+
+    public void setLikedByCurrentUser(boolean likedByCurrentUser) {
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 
 

@@ -10,10 +10,8 @@ import com.secondproj.revconnect.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import java.util.stream.Collectors;
 
 import java.util.List;
-
 
 @RestController
 @RequestMapping("/api/posts")
@@ -28,37 +26,61 @@ public class PostController {
     @Autowired
     private CommentRepository commentRepository;
 
-    // ✅ CREATE POST
+    // =========================
+    // CREATE POST
+    // =========================
     @PostMapping
     public PostResponseDTO createPost(
             @AuthenticationPrincipal User user,
             @RequestBody PostRequestDTO dto
     ) {
         Post post = postService.createPost(user, dto.getContent(), dto.getHashtags());
-        return mapToPostDTO(post);
+        return mapToPostDTO(post, user);
     }
 
-    // ✅ GET ALL POSTS (Feed)
+    // =========================
+    // GET ALL POSTS (Feed)
+    // =========================
     @GetMapping
-    public List<PostResponseDTO> getAllPosts() {
-
+    public List<PostResponseDTO> getAllPosts(
+            @AuthenticationPrincipal User user
+    ) {
         return postService.getAllPosts()
                 .stream()
-                .map(this::mapToPostDTO)
-                .collect(java.util.stream.Collectors.toList());
-    }
-
-    // ✅ GET MY POSTS
-    @GetMapping("/me")
-    public List<PostResponseDTO> myPosts(@AuthenticationPrincipal User user) {
-
-        return postService.getMyPosts(user)
-                .stream()
-                .map(this::mapToPostDTO)
+                .map(post -> mapToPostDTO(post, user))
                 .toList();
     }
 
-    // ✅ DELETE POST
+    // =========================
+    // GET MY POSTS
+    // =========================
+    @GetMapping("/me")
+    public List<PostResponseDTO> myPosts(
+            @AuthenticationPrincipal User user
+    ) {
+        return postService.getMyPosts(user)
+                .stream()
+                .map(post -> mapToPostDTO(post, user))
+                .toList();
+    }
+
+    // =========================
+    // GET POSTS BY USER ID
+    // =========================
+    @GetMapping("/user/{userId}")
+    public List<PostResponseDTO> getUserPosts(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long userId
+    ) {
+        return postService.getPostsByUserId(userId)
+                .stream()
+                .map(post -> mapToPostDTO(post, currentUser))
+                .toList();
+    }
+
+    // =========================
+    // DELETE POST
+    // =========================
     @DeleteMapping("/{postId}")
     public String deletePost(
             @AuthenticationPrincipal User user,
@@ -68,11 +90,19 @@ public class PostController {
         return "Post deleted successfully";
     }
 
-    // 🔥 DTO Mapper (must be inside class)
-    private PostResponseDTO mapToPostDTO(Post post) {
+    // =========================
+    // DTO MAPPER
+    // =========================
+    private PostResponseDTO mapToPostDTO(Post post, User currentUser) {
 
         long likeCount = likeRepository.countByPost(post);
-        long commentCount = commentRepository.findByPost(post).size();
+        long commentCount = commentRepository.countByPost(post);
+
+        boolean liked = false;
+
+        if (currentUser != null) {
+            liked = likeRepository.existsByUserAndPost(currentUser, post);
+        }
 
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
@@ -84,14 +114,8 @@ public class PostController {
         dto.setUsername(post.getUser().getUsername());
         dto.setLikeCount(likeCount);
         dto.setCommentCount(commentCount);
+        dto.setLikedByCurrentUser(liked);
 
         return dto;
-    }
-    @GetMapping("/user/{userId}")
-    public List<PostResponseDTO> getUserPosts(@PathVariable Long userId) {
-        return postService.getPostsByUserId(userId)
-                .stream()
-                .map(this::mapToPostDTO)
-                .toList();
     }
 }

@@ -17,13 +17,16 @@ public class Post {
     private String hashtags;
     private boolean pinned;
     private LocalDateTime createdAt;
+    private boolean likedByCurrentUser;
+
+
 
 
 
     @Column(nullable = false)
     private int likeCount = 0;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -53,5 +56,12 @@ public class Post {
 
     public void setLikeCount(int likeCount) {
         this.likeCount = likeCount;
+    }
+    public boolean isLikedByCurrentUser() {
+        return likedByCurrentUser;
+    }
+
+    public void setLikedByCurrentUser(boolean likedByCurrentUser) {
+        this.likedByCurrentUser = likedByCurrentUser;
     }
 }
