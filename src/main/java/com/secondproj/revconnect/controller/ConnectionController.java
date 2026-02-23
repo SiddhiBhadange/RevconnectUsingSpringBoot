@@ -54,7 +54,7 @@ public class ConnectionController {
 
     // 🔹 Get My Connections
     @GetMapping
-    public List<User> getConnections(
+    public List<Connection> getConnections(
             @AuthenticationPrincipal User user
     ) {
         return connectionService.getConnections(user);

@@ -74,7 +74,7 @@ public class ConnectionService {
     }
 
     // 🔹 Get My Connections
-    public List<User> getConnections(User user) {
-        return connectionRepository.findAcceptedConnections(user);
+    public List<Connection> getConnections(User user) {
+        return connectionRepository.findBySenderAndStatus(user, "PENDING");
     }
 }

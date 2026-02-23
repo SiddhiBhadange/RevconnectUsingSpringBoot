@@ -45,8 +45,9 @@ public class FollowController {
         // CREATE NOTIFICATION
         notificationService.createNotification(
                 following,
-                user.getUsername() + " started following you",
-                "FOLLOW"
+                "FOLLOW",
+                user.getUsername() + " started following you"
+
         );
 
         return "Followed successfully";

@@ -12,6 +12,5 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
     List<Connection> findByReceiverAndStatus(User receiver, String status);
 
-    // Custom query for accepted connections
-    List<User> findAcceptedConnections(User user);
+    List<Connection> findBySenderAndStatus(User sender, String status);
 }
