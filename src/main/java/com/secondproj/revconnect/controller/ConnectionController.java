@@ -1,8 +1,9 @@
 package com.secondproj.revconnect.controller;
 
+import com.secondproj.revconnect.model.Connection;
 import com.secondproj.revconnect.model.User;
-import com.secondproj.revconnect.service.ConnectionService;
 import com.secondproj.revconnect.repository.UserRepository;
+import com.secondproj.revconnect.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ public class ConnectionController {
     @Autowired
     private UserRepository userRepository;
 
-    // 🔹 Send Connection Request
+    // 🔹 Send Request
     @PostMapping("/request/{userId}")
     public String sendRequest(
             @AuthenticationPrincipal User user,
@@ -33,7 +34,7 @@ public class ConnectionController {
         return "Connection request sent";
     }
 
-    // 🔹 Accept / Reject Request
+    // 🔹 Accept / Reject
     @PostMapping("/respond/{requestId}")
     public String respond(
             @PathVariable Long requestId,
@@ -45,7 +46,7 @@ public class ConnectionController {
 
     // 🔹 Get My Pending Requests
     @GetMapping("/pending")
-    public List<?> getPendingRequests(
+    public List<Connection> getPending(
             @AuthenticationPrincipal User user
     ) {
         return connectionService.getPendingRequests(user);

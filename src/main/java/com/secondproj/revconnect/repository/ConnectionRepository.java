@@ -5,15 +5,13 @@ import com.secondproj.revconnect.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
-    Optional<Connection> findBySenderAndReceiver(User sender, User receiver);
+    boolean existsBySenderAndReceiver(User sender, User receiver);
 
     List<Connection> findByReceiverAndStatus(User receiver, String status);
 
-    List<Connection> findBySenderAndStatus(User sender, String status);
-
-    List<User> findBySenderOrReceiverAndStatus(User sender, User receiver, String status);
+    // Custom query for accepted connections
+    List<User> findAcceptedConnections(User user);
 }
