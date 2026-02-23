@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DashboardRoutingModule } from './dashboard-routing.module';
 import { HomeComponent } from './pages/home/home.component';
 import { FormsModule } from '@angular/forms';
-import { CommentService } from './services/comment.service';
+import { CommentService } from '../../core/services/comment.service';
 
 
 @NgModule({

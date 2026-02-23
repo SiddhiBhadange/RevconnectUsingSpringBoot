@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NotificationService } from '../../features/dashboard/services/notification.service';
-
+import { NotificationService } from '../../core/services/notification.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.component.html',
@@ -11,7 +11,10 @@ export class NotificationsComponent implements OnInit {
 
   notifications: any[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,
+              private notificationService: NotificationService,
+              private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadNotifications();
@@ -25,15 +28,7 @@ export class NotificationsComponent implements OnInit {
     });
   }
 
-  markAsRead(id: number) {
-    this.http.put(
-      `http://localhost:8080/api/notifications/${id}/read`,
-      {},
-      { withCredentials: true }
-    ).subscribe(() => {
-      this.loadNotifications();
-    });
-  }
+
   markAsRead(id: number) {
   this.http.put(
     `http://localhost:8080/api/notifications/${id}/read`,
@@ -44,7 +39,9 @@ export class NotificationsComponent implements OnInit {
     const notification = this.notifications.find(n => n.id === id);
     if (notification) notification.read = true;
 
-    this.notificationService.decrease();
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  this.router.navigate([this.router.url]);
+});
   });
 }
 }

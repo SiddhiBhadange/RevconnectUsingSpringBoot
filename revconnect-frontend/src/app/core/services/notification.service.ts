@@ -22,12 +22,17 @@ export class NotificationService {
   }
 
   decrease() {
-    const current = this.unreadCountSubject.value;
-    this.unreadCountSubject.next(Math.max(0, current - 1));
+    this.unreadCountSubject.next(
+      Math.max(0, this.unreadCountSubject.value - 1)
+    );
   }
 
   increase() {
-    const current = this.unreadCountSubject.value;
-    this.unreadCountSubject.next(current + 1);
+    this.unreadCountSubject.next(
+      this.unreadCountSubject.value + 1
+    );
   }
+   reset() {
+  this.unreadCountSubject.next(0);
+}
 }

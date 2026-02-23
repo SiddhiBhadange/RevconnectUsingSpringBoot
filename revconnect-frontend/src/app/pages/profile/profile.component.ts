@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
+import { NotificationService } from 'src/app/core/services/notification.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
@@ -24,7 +26,9 @@ export class ProfileComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private http: HttpClient
+    private http: HttpClient,
+    private notificationService: NotificationService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -96,18 +100,23 @@ export class ProfileComponent implements OnInit {
 
   followUser() {
 
-    if (!this.user?.id) return;
+  if (!this.user?.id) return;
 
-    this.http.post(
-      `http://localhost:8080/api/follow/${this.user.id}`,
-      {},
-      { withCredentials: true }
-    ).subscribe(() => {
-      this.isFollowing = true;
-      this.followersCount++;
-    });
-  }
+  this.http.post(
+    `http://localhost:8080/api/follow/${this.user.id}`,
+    {},
+    { withCredentials: true }
+  ).subscribe(() => {
 
+    this.isFollowing = true;
+    this.followersCount++;
+
+
+   this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  this.router.navigate([this.router.url]);
+});
+  });
+}
   unfollowUser() {
 
     if (!this.user?.id) return;
@@ -118,6 +127,9 @@ export class ProfileComponent implements OnInit {
     ).subscribe(() => {
       this.isFollowing = false;
       this.followersCount--;
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+  this.router.navigate([this.router.url]);
+});
     });
   }
 

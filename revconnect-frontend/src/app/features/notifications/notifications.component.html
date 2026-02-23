@@ -10,8 +10,8 @@
        *ngFor="let n of notifications"
        [class.unread]="!n.read">
 
-    <div class="message">
-      {{ n.message }}
+    <div class="type">
+      {{ n.type }}
     </div>
 
     <div class="time">
