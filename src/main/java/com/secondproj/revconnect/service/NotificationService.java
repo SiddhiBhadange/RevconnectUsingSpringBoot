@@ -15,12 +15,12 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public void createNotification(User user, String type, String message) {
+    public void createNotification(User user, String message, String type) {
 
         Notification notification = new Notification();
         notification.setUser(user);
-        notification.setType(type);
         notification.setMessage(message);
+        notification.setType(type);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
