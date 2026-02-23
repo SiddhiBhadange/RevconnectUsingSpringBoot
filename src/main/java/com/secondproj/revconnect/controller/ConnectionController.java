@@ -1,5 +1,6 @@
 package com.secondproj.revconnect.controller;
 
+import com.secondproj.revconnect.dto.ConnectionResponseDTO;
 import com.secondproj.revconnect.model.Connection;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.UserRepository;
@@ -20,43 +21,81 @@ public class ConnectionController {
     @Autowired
     private UserRepository userRepository;
 
-    // 🔹 Send Request
+    // =============================
+    // SEND CONNECTION REQUEST
+    // =============================
     @PostMapping("/request/{userId}")
     public String sendRequest(
-            @AuthenticationPrincipal User user,
+            @AuthenticationPrincipal User sender,
             @PathVariable Long userId
     ) {
+        if (sender.getId().equals(userId)) {
+            throw new RuntimeException("You cannot connect with yourself");
+        }
+
         User receiver = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        connectionService.sendRequest(user, receiver);
+        connectionService.sendRequest(sender, receiver);
 
         return "Connection request sent";
     }
 
-    // 🔹 Accept / Reject
+    // =============================
+    // ACCEPT OR REJECT REQUEST
+    // =============================
     @PostMapping("/respond/{requestId}")
     public String respond(
+            @AuthenticationPrincipal User user,
             @PathVariable Long requestId,
             @RequestParam String status
     ) {
-        connectionService.respondRequest(requestId, status);
+        connectionService.respondRequest(user, requestId, status);
         return "Request " + status;
     }
 
-    // 🔹 Get My Pending Requests
+    // =============================
+    // GET MY PENDING REQUESTS
+    // =============================
     @GetMapping("/pending")
-    public List<Connection> getPending(
+    public List<ConnectionResponseDTO> getPending(
             @AuthenticationPrincipal User user
     ) {
-        return connectionService.getPendingRequests(user);
+        return connectionService.getPendingRequests(user)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
     }
 
-    // 🔹 Get My Connections
+    // =============================
+    // GET MY CONNECTIONS
+    // =============================
     @GetMapping
-    public List<Connection> getConnections(
+    public List<ConnectionResponseDTO> getConnections(
             @AuthenticationPrincipal User user
     ) {
-        return connectionService.getConnections(user);
+        return connectionService.getConnections(user)
+                .stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
+    // =============================
+    // DTO MAPPER
+    // =============================
+    private ConnectionResponseDTO mapToDTO(Connection connection) {
+
+        ConnectionResponseDTO dto = new ConnectionResponseDTO();
+
+        dto.setId(connection.getId());
+        dto.setStatus(connection.getStatus());
+
+        dto.setSenderId(connection.getSender().getId());
+        dto.setSenderUsername(connection.getSender().getUsername());
+
+        dto.setReceiverId(connection.getReceiver().getId());
+        dto.setReceiverUsername(connection.getReceiver().getUsername());
+
+        return dto;
     }
 }
