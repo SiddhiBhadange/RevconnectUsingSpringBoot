@@ -41,4 +41,8 @@ public class NotificationController {
         notificationService.markAsRead(id);
         return "Notification marked as read";
     }
+    @GetMapping("/unread-count")
+    public long unreadCount(@AuthenticationPrincipal User user) {
+        return notificationService.getUnreadCount(user);
+    }
 }
