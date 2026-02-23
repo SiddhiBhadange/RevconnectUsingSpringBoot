@@ -37,7 +37,7 @@ public class ConnectionService {
         connectionRepository.save(connection);
     }
 
-    public List<Connection> getConnections(User user) {
+    public List<User> getConnections(User user) {
         return connectionRepository.findBySenderOrReceiverAndStatus(user, user, "ACCEPTED");
     }
 }
