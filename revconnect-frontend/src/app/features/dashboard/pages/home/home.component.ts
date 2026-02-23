@@ -36,15 +36,24 @@ export class HomeComponent implements OnInit {
   });
 }
 toggleLike(post: any) {
-  this.postService.toggleLike(post.id).subscribe(() => {
-    post.likedByCurrentUser = !post.likedByCurrentUser;
 
-    if (post.likedByCurrentUser) {
-      post.likeCount++;
-    } else {
+  if (post.likedByCurrentUser) {
+
+    // UNLIKE
+    this.postService.unlikePost(post.id).subscribe(() => {
+      post.likedByCurrentUser = false;
       post.likeCount--;
-    }
-  });
+    });
+
+  } else {
+
+    // LIKE
+    this.postService.likePost(post.id).subscribe(() => {
+      post.likedByCurrentUser = true;
+      post.likeCount++;
+    });
+
+  }
 }
  toggleComments(post: any) {
     post.showComments = !post.showComments;

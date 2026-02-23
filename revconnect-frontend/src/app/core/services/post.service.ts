@@ -19,10 +19,17 @@ export class PostService {
       { withCredentials: true }
     );
   }
-  toggleLike(postId: number) {
+ likePost(postId: number) {
   return this.http.post(
     `http://localhost:8080/api/likes/${postId}`,
     {},
+    { withCredentials: true }
+  );
+}
+
+unlikePost(postId: number) {
+  return this.http.delete(
+    `http://localhost:8080/api/likes/${postId}`,
     { withCredentials: true }
   );
 }

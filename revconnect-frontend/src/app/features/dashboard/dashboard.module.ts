@@ -5,6 +5,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { HomeComponent } from './pages/home/home.component';
 import { FormsModule } from '@angular/forms';
 import { CommentService } from '../../core/services/comment.service';
+import { MatIconModule } from '@angular/material/icon';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { CommentService } from '../../core/services/comment.service';
     CommonModule,
     DashboardRoutingModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    MatIconModule
   ]
 })
 export class DashboardModule {
