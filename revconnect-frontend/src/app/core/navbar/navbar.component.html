@@ -10,10 +10,16 @@
   </ng-container>
 
   <!-- If Logged In -->
-  <ng-template #guest>
-    <a mat-button routerLink="/dashboard">Dashboard</a>
-    <a mat-button routerLink="/dashboard/profile">Profile</a>
-    <a mat-button (click)="logout()">Logout</a>
-  </ng-template>
-
-</mat-toolbar>
+ <ng-template #guest>
+  <a mat-button routerLink="/dashboard">Dashboard</a>
+  <a mat-button routerLink="/dashboard/profile">Profile</a>
+  <a mat-button (click)="logout()">Logout</a>
+  
+  <!-- Notification Icon -->
+  <div class="notification-icon" (click)="router.navigate(['/notifications'])">
+    <mat-icon>notifications</mat-icon>
+    <span *ngIf="unreadCount > 0" class="badge">
+      {{ unreadCount }}
+    </span>
+  </div>
+</ng-template>

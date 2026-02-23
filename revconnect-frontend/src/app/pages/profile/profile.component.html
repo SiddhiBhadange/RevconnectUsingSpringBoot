@@ -1,24 +1,26 @@
 <div class="profile-wrapper" *ngIf="user">
 
-  <!-- COVER SECTION -->
+  <!-- COVER -->
   <div class="cover-section">
     <div class="cover-bg"></div>
 
     <div class="profile-header">
 
-      <!-- Profile Image -->
+      <!-- IMAGE -->
       <img *ngIf="user?.profilePictureUrl"
            [src]="user?.profilePictureUrl"
            class="profile-img" />
 
-      <!-- Profile Info -->
+      <!-- INFO -->
       <div class="profile-info">
 
+        <!-- NAME ROW -->
         <div class="name-row">
           <h2>{{ user?.name || user?.username }}</h2>
 
-          <!-- Follow Button (Right Side) -->
+          <!-- FOLLOW BUTTON -->
           <div *ngIf="!isOwnProfile()" class="follow-section">
+
             <button *ngIf="!isFollowing"
                     class="follow-btn"
                     (click)="followUser()">
@@ -30,18 +32,21 @@
                     (click)="unfollowUser()">
               Following
             </button>
+
           </div>
         </div>
 
+        <!-- BIO -->
         <p class="headline">
           {{ user?.bio || 'No headline added' }}
         </p>
 
+        <!-- LOCATION -->
         <p class="location">
           {{ user?.location || 'Location not added' }}
         </p>
 
-        <!-- Stats -->
+        <!-- STATS -->
         <div class="stats">
           <span class="clickable"
                 (click)="showFollowersModal = true">
@@ -54,9 +59,10 @@
           </span>
         </div>
 
-      </div>
-    </div>
-  </div>
+      </div> <!-- profile-info -->
+
+    </div> <!-- profile-header -->
+  </div> <!-- cover-section -->
 
   <!-- TABS -->
   <div class="tabs">
@@ -71,17 +77,15 @@
             (click)="activeTab = 'edit'">Edit</button>
   </div>
 
-  <!-- TAB CONTENT -->
+  <!-- CONTENT -->
   <div class="tab-content">
 
-    <!-- ABOUT -->
     <div *ngIf="activeTab === 'about'">
       <p><strong>Email:</strong> {{ user?.email }}</p>
       <p><strong>Website:</strong> {{ user?.website || 'Not added' }}</p>
       <p><strong>Role:</strong> {{ user?.roles }}</p>
     </div>
 
-    <!-- POSTS -->
     <div *ngIf="activeTab === 'posts'">
       <div class="post-card" *ngFor="let post of posts">
         <p>{{ post.content }}</p>
@@ -89,9 +93,7 @@
       </div>
     </div>
 
-    <!-- EDIT -->
     <div *ngIf="activeTab === 'edit'">
-
       <input [(ngModel)]="user.name" placeholder="Name" />
       <input [(ngModel)]="user.bio" placeholder="Headline" />
       <input [(ngModel)]="user.location" placeholder="Location" />
@@ -101,7 +103,6 @@
       <button class="save-btn" (click)="saveProfile()">
         Save Changes
       </button>
-
     </div>
 
   </div>

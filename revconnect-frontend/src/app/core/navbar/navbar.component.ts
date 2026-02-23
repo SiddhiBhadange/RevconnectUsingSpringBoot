@@ -7,7 +7,7 @@ import { AuthService } from '../../features/auth/auth.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
-  
+  unreadCount: number = 0;
   checkLogin() {
     this.authService.getCurrentUser().subscribe({
       next: () => this.isLoggedIn = true,
@@ -20,7 +20,7 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private router: Router
+    public router: Router
   ) {
     this.authService.isLoggedIn$.subscribe(status => {
       this.isLoggedIn = status;
