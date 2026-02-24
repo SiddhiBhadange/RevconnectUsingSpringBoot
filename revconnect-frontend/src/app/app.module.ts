@@ -12,13 +12,16 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NotificationsComponent } from './features/notifications/notifications.component';
+import { ConnectionsComponent } from './features/connections/connections.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     ProfileComponent,
-    NotificationsComponent
+    NotificationsComponent,
+    ConnectionsComponent
   ],
   imports: [
     BrowserModule,
@@ -28,7 +31,8 @@ import { NotificationsComponent } from './features/notifications/notifications.c
     MatButtonModule ,   // <-- required for <button mat-raised-button>
     HttpClientModule,
     FormsModule,
-    MatIconModule
+    MatIconModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

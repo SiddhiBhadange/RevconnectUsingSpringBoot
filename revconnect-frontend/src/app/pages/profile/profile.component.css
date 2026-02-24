@@ -2,14 +2,9 @@
   width: 850px;
   margin: 30px auto;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+  border-radius: 14px;
+  box-shadow: 0 6px 25px rgba(0,0,0,0.08);
   overflow: hidden;
-}
-
-/* Cover Section */
-.cover-section {
-  position: relative;
 }
 
 .cover-bg {
@@ -19,11 +14,10 @@
 
 .profile-header {
   display: flex;
-  padding: 20px;
+  padding: 25px;
   margin-top: -60px;
 }
 
-/* Profile Image */
 .profile-img {
   width: 130px;
   height: 130px;
@@ -33,13 +27,11 @@
   background: #eee;
 }
 
-/* Profile Info */
 .profile-info {
   margin-left: 25px;
   flex: 1;
 }
 
-/* Name + Follow button row */
 .name-row {
   display: flex;
   justify-content: space-between;
@@ -51,19 +43,96 @@
   font-size: 24px;
 }
 
-/* Headline */
-.headline {
-  margin: 8px 0;
+.action-section {
+  display: flex;
+  gap: 10px;
+}
+
+.request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* FOLLOW */
+.follow-btn,
+.connect-btn {
+  background: linear-gradient(135deg, #0a66c2, #004182);
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.follow-btn:hover,
+.connect-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(10,102,194,0.3);
+}
+
+.following-btn {
+  background: #e4e6eb;
+  color: #333;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* PENDING */
+.pending-btn {
+  background: #f3f4f6;
   color: #555;
+  border: 1px solid #ddd;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
-/* Location */
-.location {
-  color: #777;
-  font-size: 14px;
+/* CONNECTED */
+.connected-btn {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #2e7d32;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
-/* Stats */
+/* ACCEPT */
+.accept-btn {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.accept-btn:hover {
+  background: #1b5e20;
+}
+
+/* REJECT */
+.reject-btn {
+  background: #fff;
+  color: #d32f2f;
+  border: 1px solid #d32f2f;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.reject-btn:hover {
+  background: #fdecea;
+}
+
+/* STATS */
 .stats {
   margin-top: 10px;
   display: flex;
@@ -80,46 +149,10 @@
   text-decoration: underline;
 }
 
-/* Follow Buttons */
-.follow-section {
-  margin-left: 20px;
-}
-
-.follow-btn {
-  background: #4b5bdc;
-  color: white;
-  border: none;
-  padding: 7px 18px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.follow-btn:hover {
-  background: #3f51b5;
-}
-
-.following-btn {
-  background: #e4e6eb;
-  color: #333;
-  border: none;
-  padding: 7px 18px;
-  border-radius: 20px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.following-btn:hover {
-  background: #d8dadf;
-}
-
-/* Tabs */
 .tabs {
   display: flex;
   border-top: 1px solid #eee;
   border-bottom: 1px solid #eee;
-  justify-content: center;
 }
 
 .tabs button {
@@ -136,12 +169,10 @@
   color: #4b5bdc;
 }
 
-/* Tab Content */
 .tab-content {
-  padding: 20px;
+  padding: 25px;
 }
 
-/* Posts */
 .post-card {
   padding: 15px;
   border: 1px solid #eee;
@@ -150,7 +181,6 @@
   background: #fafafa;
 }
 
-/* Edit Inputs */
 input {
   width: 100%;
   padding: 8px;
@@ -163,7 +193,7 @@ input {
   background: #4b5bdc;
   color: white;
   border: none;
-  padding: 8px 15px;
+  padding: 8px 18px;
   border-radius: 6px;
   cursor: pointer;
 }

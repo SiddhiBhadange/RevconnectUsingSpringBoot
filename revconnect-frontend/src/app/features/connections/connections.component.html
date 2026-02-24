@@ -1,0 +1,42 @@
+<div class="connections-wrapper">
+
+  <h2>Pending Connection Requests</h2>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">
+    Loading requests...
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMessage" class="error">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && pendingRequests.length === 0" class="empty">
+    No pending requests
+  </div>
+
+  <!-- Request List -->
+  <div *ngFor="let request of pendingRequests" class="request-card">
+
+    <div class="user-info">
+      <strong>{{ request.senderUsername }}</strong>
+      <span>wants to connect with you</span>
+    </div>
+
+    <div class="actions">
+      <button class="accept-btn"
+              (click)="accept(request.id)">
+        Accept
+      </button>
+
+      <button class="reject-btn"
+              (click)="reject(request.id)">
+        Reject
+      </button>
+    </div>
+
+  </div>
+
+</div>

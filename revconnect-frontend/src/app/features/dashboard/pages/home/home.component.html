@@ -19,34 +19,46 @@
 
     <small>{{ post.createdAt | date:'short' }}</small>
 
-    <div class="post-actions">
-     <span 
-  (click)="toggleLike(post)" 
-  [class.liked]="post.likedByCurrentUser"
-  class="like-btn"
->
-  ❤️ {{ post.likeCount }}
-</span>
-      💬 {{ post.commentCount }}
-    </div>
+ <div class="post-actions">
+
+  <!-- LIKE -->
+  <div class="action-item"
+       (click)="toggleLike(post)"
+       [class.liked]="post.likedByCurrentUser">
+
+    <mat-icon class="action-icon">
+      {{ post.likedByCurrentUser ? 'favorite' : 'favorite_border' }}
+    </mat-icon>
+
+    <span>{{ post.likeCount }}</span>
+  </div>
+
+  <!-- COMMENT -->
+  <div class="action-item">
+    <mat-icon class="action-icon">chat_bubble_outline</mat-icon>
+    <span>{{ post.commentCount }}</span>
+  </div>
+
+</div>
      <!-- Comment Section -->
   <div class="comment-section">
 
-    <button (click)="toggleComments(post)">
+    <button   class="comment-toggle-btn" (click)="toggleComments(post)">
       View Comments
     </button>
 
     <div *ngIf="post.showComments">
 
-      <div *ngFor="let comment of post.comments">
+      <div *ngFor="let comment of post.comments" class="comment-item">
         <strong>{{ comment.username }}</strong>
         <p>{{ comment.content }}</p>
       </div>
 
-      <input [(ngModel)]="post.newComment"
-             placeholder="Write a comment..." />
-
-      <button (click)="addComment(post)">
+      <input 
+  class="comment-input"
+  [(ngModel)]="post.newComment"
+  placeholder="Write a comment..." />
+      <button class="comment-submit-btn" (click)="addComment(post)">
         Comment
       </button>
  </div>

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NotificationsComponent } from './features/notifications/notifications.component';
+import { ConnectionsComponent } from './features/connections/connections.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,9 @@ const routes: Routes = [
   {
   path: 'notifications',
   component: NotificationsComponent
+},{
+  path: 'connections',
+  component: ConnectionsComponent
 },
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' }
 ];

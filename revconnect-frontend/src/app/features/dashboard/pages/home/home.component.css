@@ -1,28 +1,27 @@
-/* Center whole feed */
+/* ============================= */
+/* FEED CONTAINER */
+/* ============================= */
+
 .feed-container {
   max-width: 650px;
   margin: 40px auto;
   padding: 0 15px;
 }
 
-/* Page title */
-h2 {
-  margin-bottom: 20px;
-  font-weight: 600;
-  color: #333;
-}
+/* ============================= */
+/* CREATE POST */
+/* ============================= */
 
-/* Create Post */
 .create-post {
   background: #ffffff;
   padding: 20px;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .create-post textarea {
-  width: 95%;
+  width: 96%;
   height: 90px;
   border-radius: 8px;
   border: 1px solid #ddd;
@@ -33,13 +32,13 @@ h2 {
 
 .create-post textarea:focus {
   outline: none;
-  border-color: #4a57c1;
+  border-color: #4361ee;
 }
 
 .create-post button {
-  margin-top: 10px;
+  margin-top: 12px;
   padding: 8px 16px;
-  background: #4a57c1;
+  background: #4361ee;
   border: none;
   border-radius: 6px;
   color: white;
@@ -48,15 +47,18 @@ h2 {
 }
 
 .create-post button:hover {
-  background: #3945a5;
+  background: #3046c7;
 }
 
-/* Post Card */
+/* ============================= */
+/* POST CARD */
+/* ============================= */
+
 .post-card {
   background: #ffffff;
   padding: 18px;
   border-radius: 12px;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   transition: 0.2s ease;
 }
@@ -68,7 +70,7 @@ h2 {
 .post-card h4 {
   margin: 0;
   font-size: 16px;
-  color: #4a57c1;
+  color: #4361ee;
 }
 
 .post-card p {
@@ -81,48 +83,38 @@ h2 {
   font-size: 12px;
 }
 
+/* ============================= */
+/* POST ACTIONS */
+/* ============================= */
+
 .post-actions {
-  margin-top: 10px;
-  font-size: 13px;
-}
-.like-btn {
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.like-btn:hover {
-  transform: scale(1.1);
-}
-
-.liked {
-  color: red;
-  font-weight: bold;
-}
-/* Feed container */
-.feed-container {
-  max-width: 650px;
-  margin: 40px auto;
-}
-
-/* Post card */
-.post-card {
-  background: #ffffff;
-  padding: 18px;
-  margin-bottom: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-}
-
-/* Post actions */
-.post-actions {
-  margin-top: 10px;
   display: flex;
-  gap: 20px;
+  align-items: center;
+  gap: 30px;
+  margin-top: 12px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
   font-size: 14px;
 }
 
-.like-btn {
+.action-icon {
+  font-size: 20px;
+}
+
+.liked .action-icon {
+  color: #e63946;
+}
+
+/* .like-btn {
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: 0.2s ease;
 }
 
@@ -132,69 +124,86 @@ h2 {
 
 .liked {
   color: #e63946;
-  font-weight: bold;
-}
+  font-weight: 600;
+} */
 
-/* Comment section */
+/* ============================= */
+/* COMMENT SECTION */
+/* ============================= */
+
 .comment-section {
   margin-top: 15px;
-  padding-top: 10px;
+  padding-top: 12px;
   border-top: 1px solid #eee;
 }
 
 /* View comments button */
-.comment-section button {
+.comment-toggle-btn {
   background: transparent;
   border: none;
   color: #4361ee;
   cursor: pointer;
   font-weight: 500;
   margin-bottom: 10px;
+  padding: 0;
 }
 
 /* Individual comment */
-.comment-section div > div {
+.comment-item {
   background: #f5f7fb;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   margin-bottom: 8px;
 }
 
-.comment-section strong {
+.comment-item strong {
   font-size: 13px;
   color: #333;
 }
 
-.comment-section p {
-  margin: 3px 0 0 0;
+.comment-item p {
+  margin: 4px 0 0 0;
   font-size: 14px;
 }
 
 /* Comment input */
-.comment-section input {
+.comment-input {
   width: 96%;
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid #ddd;
-  margin-top: 8px;
+  margin-top: 10px;
 }
 
-.comment-section input:focus {
+.comment-input:focus {
   outline: none;
   border-color: #4361ee;
 }
 
-/* Comment button */
-.comment-section button:last-child {
-  background: #4361ee;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
+/* Comment submit button */
+.comment-submit-btn {
   margin-top: 8px;
+  padding: 6px 12px;
+  background: #4361ee;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: 0.2s ease;
 }
+
+.comment-submit-btn:hover {
+  background: #3046c7;
+}
+
+/* ============================= */
+/* PROFILE LINK */
+/* ============================= */
+
 .profile-link {
   cursor: pointer;
   color: #4361ee;
+  text-decoration: none;
 }
 
 .profile-link:hover {

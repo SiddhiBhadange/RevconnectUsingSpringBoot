@@ -14,13 +14,12 @@
       <!-- INFO -->
       <div class="profile-info">
 
-        <!-- NAME ROW -->
         <div class="name-row">
           <h2>{{ user?.name || user?.username }}</h2>
 
-          <!-- FOLLOW BUTTON -->
-          <div *ngIf="!isOwnProfile()" class="follow-section">
+          <div *ngIf="!isOwnProfile()" class="action-section">
 
+            <!-- FOLLOW -->
             <button *ngIf="!isFollowing"
                     class="follow-btn"
                     (click)="followUser()">
@@ -33,20 +32,52 @@
               Following
             </button>
 
+            <!-- CONNECTION STATES -->
+
+            <!-- CONNECT -->
+            <button *ngIf="connectionStatus === 'NONE'"
+                    class="connect-btn"
+                    (click)="sendConnectionRequest()">
+              Connect
+            </button>
+
+            <!-- PENDING -->
+            <button *ngIf="connectionStatus === 'PENDING_SENT'"
+                    class="pending-btn"
+                    disabled>
+              Pending
+            </button>
+
+            <!-- RECEIVED -->
+            <div *ngIf="connectionStatus === 'PENDING_RECEIVED'" class="request-actions">
+              <button class="accept-btn"
+                      (click)="acceptRequest()">
+                Accept
+              </button>
+
+              <button class="reject-btn"
+                      (click)="rejectRequest()">
+                Reject
+              </button>
+            </div>
+
+            <!-- CONNECTED -->
+        <button *ngIf="connectionStatus === 'CONNECTED'"
+        class="connected-btn"
+        (click)="removeConnection()">
+               disconnect
+              </button>
           </div>
         </div>
 
-        <!-- BIO -->
         <p class="headline">
           {{ user?.bio || 'No headline added' }}
         </p>
 
-        <!-- LOCATION -->
         <p class="location">
           {{ user?.location || 'Location not added' }}
         </p>
 
-        <!-- STATS -->
         <div class="stats">
           <span class="clickable"
                 (click)="showFollowersModal = true">
@@ -59,10 +90,9 @@
           </span>
         </div>
 
-      </div> <!-- profile-info -->
-
-    </div> <!-- profile-header -->
-  </div> <!-- cover-section -->
+      </div>
+    </div>
+  </div>
 
   <!-- TABS -->
   <div class="tabs">
@@ -106,5 +136,4 @@
     </div>
 
   </div>
-
 </div>
