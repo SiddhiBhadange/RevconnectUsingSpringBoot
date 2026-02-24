@@ -1,5 +1,6 @@
 package com.secondproj.revconnect.service;
 
+import com.secondproj.revconnect.dto.ConnectionResponseDTO;
 import com.secondproj.revconnect.model.Connection;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.ConnectionRepository;
@@ -7,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ConnectionService {
@@ -26,8 +28,14 @@ public class ConnectionService {
         }
 
         // Prevent duplicate requests
-        if (connectionRepository.existsBySenderAndReceiver(sender, receiver)) {
-            throw new RuntimeException("Request already sent");
+        List<Connection> existing =
+                connectionRepository.findBetweenUsers(
+                        sender.getId(),
+                        receiver.getId()
+                );
+
+        if (!existing.isEmpty()) {
+            throw new RuntimeException("Connection already exists");
         }
 
         Connection connection = new Connection();
@@ -40,8 +48,9 @@ public class ConnectionService {
         //  Send Notification
         notificationService.createNotification(
                 receiver,
-                sender.getUsername() + " sent you a connection request",
-                "CONNECTION_REQUEST"
+                "CONNECTION_REQUEST",
+                sender.getUsername() + " sent you a connection request"
+
         );
     }
 
@@ -76,5 +85,54 @@ public class ConnectionService {
     //  Get My Connections
     public List<Connection> getConnections(User user) {
         return connectionRepository.findBySenderAndStatus(user, "PENDING");
+    }
+    public ConnectionResponseDTO getConnectionStatus(User currentUser, Long targetUserId) {
+
+        List<Connection> connections =
+                connectionRepository.findBetweenUsers(
+                        currentUser.getId(),
+                        targetUserId
+                );
+
+        ConnectionResponseDTO dto = new ConnectionResponseDTO();
+
+        if (connections.isEmpty()) {
+            dto.setStatus("NONE");
+            return dto;
+        }
+
+        // Just take the first one (safe even if duplicates exist)
+        Connection connection = connections.get(0);
+        dto.setId(connection.getId());
+
+        if ("PENDING".equals(connection.getStatus())) {
+
+            if (connection.getSender().getId().equals(currentUser.getId())) {
+                dto.setStatus("PENDING_SENT");
+            } else {
+                dto.setStatus("PENDING_RECEIVED");
+            }
+
+        } else if ("ACCEPTED".equals(connection.getStatus())) {
+            dto.setStatus("CONNECTED");
+        }
+
+        return dto;
+    }
+    public void removeConnection(User currentUser, Long targetUserId) {
+
+        List<Connection> connections =
+                connectionRepository.findBetweenUsers(
+                        currentUser.getId(),
+                        targetUserId
+                );
+
+        if (connections.isEmpty()) {
+            throw new RuntimeException("No connection exists");
+        }
+
+        for (Connection connection : connections) {
+            connectionRepository.delete(connection);
+        }
     }
 }

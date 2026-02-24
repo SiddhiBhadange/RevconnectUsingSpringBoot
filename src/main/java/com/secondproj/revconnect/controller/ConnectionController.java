@@ -79,6 +79,27 @@ public class ConnectionController {
                 .map(this::mapToDTO)
                 .toList();
     }
+    // =============================
+// GET CONNECTION STATUS WITH USER
+// =============================
+    @GetMapping("/status/{userId}")
+    public ConnectionResponseDTO getStatus(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long userId
+    ) {
+        return connectionService.getConnectionStatus(currentUser, userId);
+    }
+    // =============================
+// REMOVE CONNECTION
+// =============================
+    @DeleteMapping("/remove/{userId}")
+    public String removeConnection(
+            @AuthenticationPrincipal User currentUser,
+            @PathVariable Long userId
+    ) {
+        connectionService.removeConnection(currentUser, userId);
+        return "Connection removed";
+    }
 
     // =============================
     // DTO MAPPER
