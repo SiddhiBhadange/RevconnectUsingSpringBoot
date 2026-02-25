@@ -13,8 +13,8 @@
   <ng-template #guest>
     <a mat-button routerLink="/dashboard">Dashboard</a>
     <a mat-button routerLink="/dashboard/profile">Profile</a>
-    <a mat-button (click)="logout()">Logout</a>
-
+  
+   <a mat-button routerLink="/dashboard/trending">Trending</a>
     <!-- Notification Icon -->
     <div class="notification-icon"
          (click)="router.navigate(['/notifications'])">
@@ -23,6 +23,7 @@
         {{ unreadCount }}
       </span>
     </div>
+      <a mat-button (click)="logout()">Logout</a>
   </ng-template>
 
 </mat-toolbar>

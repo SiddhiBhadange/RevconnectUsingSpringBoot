@@ -209,3 +209,23 @@
 .profile-link:hover {
   text-decoration: underline;
 }
+.post-image {
+  width: 100%;
+  margin-top: 10px;
+  border-radius: 8px;
+}
+
+.hashtag {
+  color: #0a66c2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.delete-btn,
+.delete-comment-btn {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}
+

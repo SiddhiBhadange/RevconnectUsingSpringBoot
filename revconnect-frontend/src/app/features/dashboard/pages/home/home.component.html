@@ -2,65 +2,106 @@
 
   <h2>Feed</h2>
 
-  <!-- Create Post -->
+  <!-- ================= CREATE POST ================= -->
   <div class="create-post">
-    <textarea [(ngModel)]="newPost" placeholder="What's on your mind?"></textarea>
-    <button (click)="createPost()">Post</button>
+
+    <textarea
+      [(ngModel)]="newPost"
+      placeholder="What's on your mind? Use #hashtags"
+      rows="3">
+    </textarea>
+
+    <!-- Upload Photo -->
+    <input type="file" (change)="onImageSelected($event)" />
+
+    <button (click)="createPost()" [disabled]="!newPost.trim()">
+      Post
+    </button>
+
   </div>
 
   <hr>
 
-  <!-- Show Posts -->
+  <!-- ================= POSTS ================= -->
   <div *ngFor="let post of posts" class="post-card">
-  <h4 [routerLink]="['/dashboard/profile', post.userId]" class="profile-link">
-  {{ post.username }}
-</h4>
-    <p>{{ post.content }}</p>
+
+    <div class="post-header">
+      <h4 [routerLink]="['/dashboard/profile', post.userId]" class="profile-link">
+        {{ post.username }}
+      </h4>
+
+      <!-- DELETE POST -->
+      <button *ngIf="post.isOwner"
+              class="delete-btn"
+              (click)="deletePost(post)">
+        Delete
+      </button>
+    </div>
+
+    <!-- Content with hashtags -->
+    <p [innerHTML]="formatContent(post.content)"></p>
+
+    <!-- Show Image -->
+    <img *ngIf="post.imageUrl"
+         [src]="post.imageUrl"
+         class="post-image" />
 
     <small>{{ post.createdAt | date:'short' }}</small>
 
- <div class="post-actions">
+    <!-- ACTIONS -->
+    <div class="post-actions">
 
-  <!-- LIKE -->
-  <div class="action-item"
-       (click)="toggleLike(post)"
-       [class.liked]="post.likedByCurrentUser">
+      <!-- LIKE -->
+      <div class="action-item"
+           (click)="toggleLike(post)"
+           [class.liked]="post.likedByCurrentUser">
 
-    <mat-icon class="action-icon">
-      {{ post.likedByCurrentUser ? 'favorite' : 'favorite_border' }}
-    </mat-icon>
+        <mat-icon>
+          {{ post.likedByCurrentUser ? 'favorite' : 'favorite_border' }}
+        </mat-icon>
 
-    <span>{{ post.likeCount }}</span>
-  </div>
+        <span>{{ post.likeCount }}</span>
+      </div>
 
-  <!-- COMMENT -->
-  <div class="action-item">
-    <mat-icon class="action-icon">chat_bubble_outline</mat-icon>
-    <span>{{ post.commentCount }}</span>
-  </div>
+      <!-- COMMENT -->
+      <div class="action-item"
+           (click)="toggleComments(post)">
+        <mat-icon>chat_bubble_outline</mat-icon>
+        <span>{{ post.commentCount }}</span>
+      </div>
 
-</div>
-     <!-- Comment Section -->
-  <div class="comment-section">
+    </div>
 
-    <button   class="comment-toggle-btn" (click)="toggleComments(post)">
-      View Comments
-    </button>
-
-    <div *ngIf="post.showComments">
+    <!-- COMMENTS -->
+    <div *ngIf="post.showComments" class="comment-section">
 
       <div *ngFor="let comment of post.comments" class="comment-item">
-        <strong>{{ comment.username }}</strong>
+
+        <div class="comment-header">
+          <strong>{{ comment.username }}</strong>
+
+          <!-- DELETE COMMENT -->
+          <button *ngIf="comment.isOwner"
+                  class="delete-comment-btn"
+                  (click)="deleteComment(post, comment)">
+            ✕
+          </button>
+        </div>
+
         <p>{{ comment.content }}</p>
       </div>
 
-      <input 
-  class="comment-input"
-  [(ngModel)]="post.newComment"
-  placeholder="Write a comment..." />
-      <button class="comment-submit-btn" (click)="addComment(post)">
+      <input
+        [(ngModel)]="post.newComment"
+        placeholder="Write a comment..." />
+
+      <button (click)="addComment(post)"
+              [disabled]="!post.newComment?.trim()">
         Comment
       </button>
- </div>
+
+    </div>
+
   </div>
-  </div>
+
+</div>

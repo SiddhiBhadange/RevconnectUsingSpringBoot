@@ -13,6 +13,8 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { NotificationsComponent } from './features/notifications/notifications.component';
 import { ConnectionsComponent } from './features/connections/connections.component';
+import { DashboardModule } from './features/dashboard/dashboard.module';
+
 
 
 @NgModule({
@@ -32,7 +34,9 @@ import { ConnectionsComponent } from './features/connections/connections.compone
     HttpClientModule,
     FormsModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    MatIconModule,
+    DashboardModule
   ],
   providers: [],
   bootstrap: [AppComponent]

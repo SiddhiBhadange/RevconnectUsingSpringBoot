@@ -1,18 +1,13 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { ConnectionService } from '../../core/connection.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./profile.component.css']
 })
 export class ProfileComponent implements OnInit {
 
@@ -29,7 +24,9 @@ export class ProfileComponent implements OnInit {
   showFollowersModal: boolean = false;
   showFollowingModal: boolean = false;
 
+  // 🔥 CONNECTION STATE
   connectionStatus: string = 'NONE';
+  // NONE | PENDING_SENT | PENDING_RECEIVED | CONNECTED
   pendingRequestId: number | null = null;
 
   constructor(
@@ -41,11 +38,12 @@ export class ProfileComponent implements OnInit {
 
   ngOnInit(): void {
 
+    // Load logged-in user
     this.http.get<any>('http://localhost:8080/api/users/me', {
       withCredentials: true
     }).subscribe(me => {
+
       this.currentUser = me;
-      this.cdr.markForCheck();
 
       this.route.paramMap.subscribe(params => {
         const id = params.get('id');
@@ -58,6 +56,7 @@ export class ProfileComponent implements OnInit {
           this.loadFollowData();
         }
       });
+
     });
   }
 
@@ -74,7 +73,6 @@ export class ProfileComponent implements OnInit {
       this.loadPosts(user.id);
       this.loadFollowData();
       this.loadConnectionStatus();
-      this.cdr.markForCheck();
     });
   }
 
@@ -82,10 +80,7 @@ export class ProfileComponent implements OnInit {
     this.http.get<any[]>(
       `http://localhost:8080/api/posts/user/${userId}`,
       { withCredentials: true }
-    ).subscribe(posts => {
-      this.posts = posts;
-      this.cdr.markForCheck();
-    });
+    ).subscribe(posts => this.posts = posts);
   }
 
   /* ========================= */
@@ -93,32 +88,24 @@ export class ProfileComponent implements OnInit {
   /* ========================= */
 
   loadFollowData() {
+
     if (!this.user?.id) return;
 
     this.http.get<number>(
       `http://localhost:8080/api/follow/${this.user.id}/followers/count`,
       { withCredentials: true }
-    ).subscribe(count => {
-      this.followersCount = count;
-      this.cdr.markForCheck();
-    });
+    ).subscribe(count => this.followersCount = count);
 
     this.http.get<number>(
       `http://localhost:8080/api/follow/${this.user.id}/following/count`,
       { withCredentials: true }
-    ).subscribe(count => {
-      this.followingCount = count;
-      this.cdr.markForCheck();
-    });
+    ).subscribe(count => this.followingCount = count);
 
     if (!this.isOwnProfile()) {
       this.http.get<boolean>(
         `http://localhost:8080/api/follow/${this.user.id}/is-following`,
         { withCredentials: true }
-      ).subscribe(status => {
-        this.isFollowing = status;
-        this.cdr.markForCheck();
-      });
+      ).subscribe(status => this.isFollowing = status);
     }
   }
 
@@ -130,7 +117,8 @@ export class ProfileComponent implements OnInit {
       {},
       { withCredentials: true }
     ).subscribe(() => {
-      this.loadFollowData();
+      this.isFollowing = true;
+      this.followersCount++;
     });
   }
 
@@ -141,65 +129,12 @@ export class ProfileComponent implements OnInit {
       `http://localhost:8080/api/follow/${this.user.id}`,
       { withCredentials: true }
     ).subscribe(() => {
-      this.loadFollowData();
+      this.isFollowing = false;
+      this.followersCount--;
     });
   }
 
-  /* ========================= */
-  /* CONNECTION */
-  /* ========================= */
-
-  loadConnectionStatus() {
-    if (this.isOwnProfile() || !this.user?.id) return;
-
-    this.connectionService.getStatus(this.user.id)
-      .subscribe((res: any) => {
-        if (res) {
-          this.connectionStatus = res.status;
-          this.pendingRequestId = res.id;
-        } else {
-          this.connectionStatus = 'NONE';
-        }
-        this.cdr.markForCheck();
-      });
-  }
-
-  sendConnectionRequest() {
-    if (!this.user?.id) return;
-
-    this.connectionService.sendRequest(this.user.id)
-      .subscribe(() => {
-        this.loadConnectionStatus();
-      });
-  }
-
-  acceptRequest() {
-    if (!this.pendingRequestId) return;
-
-    this.connectionService.respond(this.pendingRequestId, 'ACCEPTED')
-      .subscribe(() => {
-        this.loadConnectionStatus();
-      });
-  }
-
-  rejectRequest() {
-    if (!this.pendingRequestId) return;
-
-    this.connectionService.respond(this.pendingRequestId, 'REJECTED')
-      .subscribe(() => {
-        this.loadConnectionStatus();
-      });
-  }
-
-  removeConnection() {
-    if (!this.user?.id) return;
-
-    this.connectionService.removeConnection(this.user.id)
-      .subscribe(() => {
-        this.loadConnectionStatus();
-      });
-  }
-
+  
   /* ========================= */
 
   saveProfile() {
@@ -209,7 +144,6 @@ export class ProfileComponent implements OnInit {
       { withCredentials: true }
     ).subscribe(() => {
       this.activeTab = 'about';
-      this.cdr.markForCheck();
     });
   }
 
@@ -218,4 +152,79 @@ export class ProfileComponent implements OnInit {
            this.user &&
            this.currentUser.id === this.user.id;
   }
+  /* ========================= */
+  /* CONNECTION */
+  /* ========================= */
+
+loadConnectionStatus() {
+  if (this.isOwnProfile() || !this.user?.id) return;
+
+  this.connectionService.getStatus(this.user.id)
+    .subscribe({
+      next: (res: any) => {
+        if (res) {
+          this.connectionStatus = res.status;
+          this.pendingRequestId = res.id;
+        } else {
+          this.connectionStatus = 'NONE';
+        }
+      },
+      error: (err) => {
+        console.error('Status error:', err);
+        this.connectionStatus = 'NONE';
+      }
+    });
 }
+
+sendConnectionRequest() {
+  if (!this.user?.id) return;
+
+  this.connectionService.sendRequest(this.user.id)
+    .subscribe({
+      next: () => {
+        // Immediately update UI
+        this.connectionStatus = 'PENDING_SENT';
+
+        // 🔥 Re-fetch real status from backend
+        this.loadConnectionStatus();
+      },
+      error: (err) => {
+        console.error('Connection request failed:', err);
+      }
+    });
+}
+  acceptRequest() {
+  if (!this.pendingRequestId) return;
+
+  this.connectionService.respond(this.pendingRequestId, 'ACCEPTED')
+    .subscribe({
+      next: () => {
+        this.connectionStatus = 'CONNECTED';
+      },
+      error: (err) => console.error(err)
+    });
+}
+rejectRequest() {
+  if (!this.pendingRequestId) return;
+
+  this.connectionService.respond(this.pendingRequestId, 'REJECTED')
+    .subscribe({
+      next: () => {
+        this.connectionStatus = 'NONE';
+      },
+      error: (err) => console.error(err)
+    });
+}
+removeConnection() {
+  if (!this.user?.id) return;
+
+  this.connectionService.removeConnection(this.user.id)
+    .subscribe({
+      next: () => {
+        this.connectionStatus = 'NONE';
+      },
+      error: (err) => console.error(err)
+    });
+}
+
+} 

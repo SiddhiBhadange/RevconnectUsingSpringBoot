@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Post } from '../../features/dashboard/dashboard.module';
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
@@ -8,29 +10,40 @@ export class PostService {
 
   constructor(private http: HttpClient) {}
 
-  getAllPosts() {
-    return this.http.get(this.API_URL, { withCredentials: true });
-  }
-
-  createPost(content: string) {
-    return this.http.post(
+  getAllPosts(): Observable<Post[]> {
+    return this.http.get<Post[]>(
       this.API_URL,
-      { content },
       { withCredentials: true }
     );
   }
- likePost(postId: number) {
-  return this.http.post(
-    `http://localhost:8080/api/likes/${postId}`,
-    {},
-    { withCredentials: true }
-  );
-}
 
-unlikePost(postId: number) {
-  return this.http.delete(
-    `http://localhost:8080/api/likes/${postId}`,
-    { withCredentials: true }
-  );
-}
+  createPost(data: FormData): Observable<Post> {
+    return this.http.post<Post>(
+      this.API_URL,
+      data,
+      { withCredentials: true }
+    );
+  }
+
+  deletePost(postId: number): Observable<void> {
+    return this.http.delete<void>(
+      `${this.API_URL}/${postId}`,
+      { withCredentials: true }
+    );
+  }
+
+  likePost(postId: number): Observable<void> {
+    return this.http.post<void>(
+      `http://localhost:8080/api/likes/${postId}`,
+      {},
+      { withCredentials: true }
+    );
+  }
+
+  unlikePost(postId: number): Observable<void> {
+    return this.http.delete<void>(
+      `http://localhost:8080/api/likes/${postId}`,
+      { withCredentials: true }
+    );
+  }
 }
