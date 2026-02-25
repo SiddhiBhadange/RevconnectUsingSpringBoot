@@ -5,9 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -40,9 +38,15 @@ public class User implements UserDetails {
     // Profile
     private String name;
     private String bio;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String profilePictureUrl;
     private String location;
     private String website;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
+    @Column(nullable = false)
+    private boolean deleted = false;
 
     public String getName() {
         return name;
@@ -89,6 +93,38 @@ public class User implements UserDetails {
     private String businessAddress;
     private String businessHours;
     private String contactInfo;
+
+    public String getBusinessCategory() {
+        return businessCategory;
+    }
+
+    public void setBusinessCategory(String businessCategory) {
+        this.businessCategory = businessCategory;
+    }
+
+    public String getBusinessAddress() {
+        return businessAddress;
+    }
+
+    public void setBusinessAddress(String businessAddress) {
+        this.businessAddress = businessAddress;
+    }
+
+    public String getBusinessHours() {
+        return businessHours;
+    }
+
+    public void setBusinessHours(String businessHours) {
+        this.businessHours = businessHours;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
 
     public User() {}
 

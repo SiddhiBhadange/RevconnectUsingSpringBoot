@@ -2,7 +2,10 @@ package com.secondproj.revconnect.service;
 
 import com.secondproj.revconnect.model.Post;
 import com.secondproj.revconnect.model.User;
+import com.secondproj.revconnect.repository.CommentRepository;
+import com.secondproj.revconnect.repository.LikeRepository;
 import com.secondproj.revconnect.repository.PostRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,10 @@ public class PostService {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private LikeRepository likeRepository;
+    @Autowired
+    private CommentRepository  commentRepository;
 
     public Post createPost(User user, String content, String hashtags) {
 
@@ -31,6 +38,7 @@ public class PostService {
         return postRepository.findByUser(user);
     }
 
+    @Transactional
     public void deletePost(Long postId, User user) {
 
         Post post = postRepository.findById(postId)
@@ -40,6 +48,11 @@ public class PostService {
             throw new RuntimeException("You can delete only your post");
         }
 
+        // 🔥 DELETE CHILDREN FIRST
+        likeRepository.deleteByPost(post);
+        commentRepository.deleteByPost(post);
+
+        // THEN DELETE POST
         postRepository.delete(post);
     }
 

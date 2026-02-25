@@ -10,9 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class UserService {
@@ -51,10 +49,19 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public Optional<User> getByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
 
+    public List<User> searchUsers(String keyword) {
+
+        if (keyword == null || keyword.trim().length() < 2) {
+            return Collections.emptyList();
+        }
+
+        return userRepository
+                .findByUsernameContainingIgnoreCaseOrNameContainingIgnoreCase(
+                        keyword.trim(),
+                        keyword.trim()
+                );
+    }
     public User updateProfile(User user) {
         return userRepository.save(user);
     }

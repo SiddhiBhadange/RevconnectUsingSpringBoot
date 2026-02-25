@@ -1,5 +1,8 @@
 package com.secondproj.revconnect.dto;
 import com.secondproj.revconnect.model.Role;
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
+
 import java.util.Set;
 
 public class UserResponseDTO {
@@ -11,9 +14,50 @@ public class UserResponseDTO {
 
     private String name;
     private String bio;
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
     private String profilePictureUrl;
     private String location;
     private String website;
+
+    public String getBusinessCategory() {
+        return businessCategory;
+    }
+
+    public void setBusinessCategory(String businessCategory) {
+        this.businessCategory = businessCategory;
+    }
+
+    public String getBusinessAddress() {
+        return businessAddress;
+    }
+
+    public void setBusinessAddress(String businessAddress) {
+        this.businessAddress = businessAddress;
+    }
+
+    public String getBusinessHours() {
+        return businessHours;
+    }
+
+    public void setBusinessHours(String businessHours) {
+        this.businessHours = businessHours;
+    }
+
+    public String getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(String contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    private String businessCategory;
+    private String businessAddress;
+    private String businessHours;
+    private String contactInfo;
+
+
 
 
     public UserResponseDTO() {}
