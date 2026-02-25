@@ -16,9 +16,12 @@ public class CommentService {
 
     @Autowired
     private CommentRepository commentRepository;
+    @Autowired
+    private NotificationService notificationService;
 
     @Autowired
     private PostRepository postRepository;
+
 
     public Comment addComment(User user, Long postId, String content) {
 
@@ -31,9 +34,20 @@ public class CommentService {
         comment.setContent(content);
         comment.setCreatedAt(LocalDateTime.now());
 
-        return commentRepository.save(comment);
-    }
+        Comment savedComment = commentRepository.save(comment);
 
+        // 🔥 Create notification (avoid self notification)
+        if (!post.getUser().getId().equals(user.getId())) {
+            notificationService.createNotification(
+                    post.getUser(),
+                    user,
+                    "COMMENT",
+                    user.getUsername() + " commented on your post"
+            );
+        }
+
+        return savedComment;
+    }
 
     public List<Comment> getComments(Long postId) {
         Post post = postRepository.findById(postId)
