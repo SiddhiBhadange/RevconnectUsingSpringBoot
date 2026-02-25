@@ -44,13 +44,13 @@ public class ConnectionService {
         connection.setStatus("PENDING");
 
         connectionRepository.save(connection);
-
         //  Send Notification
+        // Send Notification (Connection Request)
         notificationService.createNotification(
                 receiver,
+                sender,
                 "CONNECTION_REQUEST",
                 sender.getUsername() + " sent you a connection request"
-
         );
     }
 
@@ -70,9 +70,10 @@ public class ConnectionService {
 
         if ("ACCEPTED".equalsIgnoreCase(status)) {
             notificationService.createNotification(
-                    connection.getSender(),
-                    currentUser.getUsername() + " accepted your connection request",
-                    "CONNECTION_ACCEPTED"
+                    connection.getSender(),   // receiver
+                    currentUser,              // 🔥 sender
+                    "CONNECTION_ACCEPTED",
+                    currentUser.getUsername() + " accepted your connection request"
             );
         }
     }

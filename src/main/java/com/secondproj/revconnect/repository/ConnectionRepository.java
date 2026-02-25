@@ -41,4 +41,7 @@ WHERE (c.sender.id = :user1 AND c.receiver.id = :user2)
             @Param("user1") Long user1,
             @Param("user2") Long user2
     );
+
+    void deleteBySenderId(Long senderId);
+    void deleteByReceiverId(Long receiverId);
 }
