@@ -10,6 +10,35 @@ public class NotificationResponseDTO {
     private boolean read;
     private LocalDateTime createdAt;
 
+    // 🔥 NEW FIELDS
+    private Long senderId;
+    private String senderUsername;
+    private String senderProfilePictureUrl;
+
+    public Long getSenderId() {
+        return senderId;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
+    public String getSenderUsername() {
+        return senderUsername;
+    }
+
+    public void setSenderUsername(String senderUsername) {
+        this.senderUsername = senderUsername;
+    }
+
+    public String getSenderProfilePictureUrl() {
+        return senderProfilePictureUrl;
+    }
+
+    public void setSenderProfilePictureUrl(String senderProfilePictureUrl) {
+        this.senderProfilePictureUrl = senderProfilePictureUrl;
+    }
+
     public NotificationResponseDTO() {}
 
     public Long getId() {

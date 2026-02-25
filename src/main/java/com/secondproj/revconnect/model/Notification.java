@@ -18,7 +18,20 @@ public class Notification {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    private User user;
+    @JoinColumn(name = "user_id")
+    private User user;   // Receiver
+
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private User sender;
+
+    public User getSender() {
+        return sender;
+    }
+
+    public void setSender(User sender) {
+        this.sender = sender;
+    }
 
     public Notification() {}
 

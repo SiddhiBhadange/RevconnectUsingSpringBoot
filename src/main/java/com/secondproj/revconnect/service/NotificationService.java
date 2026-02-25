@@ -15,18 +15,22 @@ public class NotificationService {
     @Autowired
     private NotificationRepository notificationRepository;
 
-    public void createNotification(User user, String message, String type) {
+    public void createNotification(User receiver,
+                                   User sender,
+                                   String type,
+                                   String message) {
 
         Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setMessage(message);
+
+        notification.setUser(receiver);     // receiver
+        notification.setSender(sender);     // 🔥 sender (NEW)
         notification.setType(type);
+        notification.setMessage(message);
         notification.setRead(false);
         notification.setCreatedAt(LocalDateTime.now());
 
         notificationRepository.save(notification);
     }
-
     public List<Notification> getNotifications(User user) {
         return notificationRepository.findByUserOrderByCreatedAtDesc(user);
     }
