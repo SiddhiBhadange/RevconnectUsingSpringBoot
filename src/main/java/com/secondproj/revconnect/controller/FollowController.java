@@ -1,11 +1,15 @@
 package com.secondproj.revconnect.controller;
 
+import com.secondproj.revconnect.dto.UserResponseDTO;
 import com.secondproj.revconnect.model.Follow;
 import com.secondproj.revconnect.model.User;
+import com.secondproj.revconnect.repository.FollowRepository;
+import com.secondproj.revconnect.repository.NotificationRepository;
 import com.secondproj.revconnect.repository.UserRepository;
 import com.secondproj.revconnect.service.FollowService;
 import com.secondproj.revconnect.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,6 +28,8 @@ public class FollowController {
     @Autowired
     private NotificationService notificationService;
 
+    @Autowired
+    private FollowRepository  followRepository;
     //  FOLLOW USER
     @PostMapping("/{userId}")
     public String follow(
@@ -44,10 +50,10 @@ public class FollowController {
 
         // CREATE NOTIFICATION
         notificationService.createNotification(
-                following,
+                following,          // receiver
+                user,               // 🔥 sender
                 "FOLLOW",
                 user.getUsername() + " started following you"
-
         );
 
         return "Followed successfully";
@@ -67,31 +73,31 @@ public class FollowController {
         return "Unfollowed successfully";
     }
 
-    //  GET FOLLOWERS
-    @GetMapping("/{userId}/followers")
-    public List<User> getFollowers(@PathVariable Long userId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return followService.getFollowers(user)
-                .stream()
-                .map(Follow::getFollower)
-                .toList();
-    }
-
-    // GET FOLLOWING
-    @GetMapping("/{userId}/following")
-    public List<User> getFollowing(@PathVariable Long userId) {
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-
-        return followService.getFollowing(user)
-                .stream()
-                .map(Follow::getFollowing)
-                .toList();
-    }
+//    //  GET FOLLOWERS
+//    @GetMapping("/{userId}/followers")
+//    public List<User> getFollowers(@PathVariable Long userId) {
+//
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        return followService.getFollowers(user)
+//                .stream()
+//                .map(Follow::getFollower)
+//                .toList();
+//    }
+//
+//    // GET FOLLOWING
+//    @GetMapping("/{userId}/following")
+//    public List<User> getFollowing(@PathVariable Long userId) {
+//
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+//
+//        return followService.getFollowing(user)
+//                .stream()
+//                .map(Follow::getFollowing)
+//                .toList();
+//    }
 
     //  FOLLOWERS COUNT
     @GetMapping("/{userId}/followers/count")
@@ -127,4 +133,42 @@ public class FollowController {
 
         return followService.isFollowing(currentUser, target);
     }
+    @DeleteMapping("/remove/{userId}")
+    public ResponseEntity<String> removeFollower(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser) {
+
+        followRepository.deleteByFollowerIdAndFollowingId(
+                currentUser.getId(), userId);
+
+        return ResponseEntity.ok("Unfollowed successfully");
+    }
+    @GetMapping("/followers/{userId}")
+    public List<UserResponseDTO> getFollowers(@PathVariable Long userId) {
+
+        return followRepository.findFollowersByUserId(userId)
+                .stream()
+                .map(this::mapToUserDTO)
+                .toList();
+    }
+
+    @GetMapping("/following/{userId}")
+    public List<UserResponseDTO> getFollowing(@PathVariable Long userId) {
+
+        return followRepository.findFollowingByUserId(userId)
+                .stream()
+                .map(this::mapToUserDTO)
+                .toList();
+    }
+    private UserResponseDTO mapToUserDTO(User user) {
+
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setName(user.getName());
+        dto.setProfilePictureUrl(user.getProfilePictureUrl());
+
+        return dto;
+    }
+
 }
