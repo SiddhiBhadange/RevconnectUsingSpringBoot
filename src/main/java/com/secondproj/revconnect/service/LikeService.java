@@ -36,14 +36,16 @@ public class LikeService {
         post.setLikeCount(post.getLikeCount() + 1);
         postRepository.save(post);
 
-        // 🔥 send notification only on like
+        // send notification only on like
         if (!post.getUser().getId().equals(user.getId())) {
             notificationService.createNotification(
-                    post.getUser(),
+                    post.getUser(),   // receiver
+                    user,             // sender
                     "LIKE",
                     user.getUsername() + " liked your post"
             );
         }
+
 
         return true;
     }
