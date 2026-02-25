@@ -16,7 +16,7 @@ export class ConnectionService {
     return this.http.post(
       `${this.API}/request/${userId}`,
       {},
-      { withCredentials: true }   // ✅ IMPORTANT
+      { withCredentials: true }  
     );
   }
 
@@ -25,7 +25,7 @@ export class ConnectionService {
     return this.http.post(
       `${this.API}/respond/${requestId}?status=${status}`,
       {},
-      { withCredentials: true }   // ✅ IMPORTANT
+      { withCredentials: true }   
     );
   }
 
@@ -33,7 +33,7 @@ export class ConnectionService {
   getPending(): Observable<any> {
     return this.http.get(
       `${this.API}/pending`,
-      { withCredentials: true }   // ✅ IMPORTANT
+      { withCredentials: true }  
     );
   }
 
@@ -41,7 +41,7 @@ export class ConnectionService {
   getStatus(userId: number): Observable<any> {
     return this.http.get(
       `${this.API}/status/${userId}`,
-      { withCredentials: true }   // ✅ IMPORTANT
+      { withCredentials: true }   
     );
   }
 
@@ -49,7 +49,7 @@ export class ConnectionService {
   getConnections(): Observable<any> {
     return this.http.get(
       `${this.API}`,
-      { withCredentials: true }   // ✅ IMPORTANT
+      { withCredentials: true }  
     );
   }
   removeConnection(userId: number) {

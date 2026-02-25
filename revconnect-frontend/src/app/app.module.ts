@@ -11,10 +11,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { NotificationsComponent } from './features/notifications/notifications.component';
+import { NotificationsComponent } from './features/dashboard/pages/notifications/notifications.component';
 import { ConnectionsComponent } from './features/connections/connections.component';
-import { DashboardModule } from './features/dashboard/dashboard.module';
-
+import { SearchUserComponent } from './features/dashboard/pages/search-user/search-user.component';
+import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
 
 
 @NgModule({
@@ -23,7 +23,9 @@ import { DashboardModule } from './features/dashboard/dashboard.module';
     NavbarComponent,
     ProfileComponent,
     NotificationsComponent,
-    ConnectionsComponent
+    ConnectionsComponent,
+    SearchUserComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,
@@ -34,9 +36,7 @@ import { DashboardModule } from './features/dashboard/dashboard.module';
     HttpClientModule,
     FormsModule,
     MatIconModule,
-    FormsModule,
-    MatIconModule,
-    DashboardModule
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

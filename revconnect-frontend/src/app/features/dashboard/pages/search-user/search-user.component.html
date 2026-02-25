@@ -1,0 +1,52 @@
+<div class="search-page">
+
+  <h2>Search Users</h2>
+
+  <div class="search-box">
+    <input
+      type="text"
+      [(ngModel)]="username"
+      placeholder="Enter at least 2 characters..."
+      (keyup.enter)="searchUsers()"
+    />
+
+    <button [disabled]="username.trim().length < 2"
+            (click)="searchUsers()">
+      Search
+    </button>
+  </div>
+
+  <!-- Validation message -->
+  <div *ngIf="username.trim().length === 1" class="hint">
+    Please enter at least 2 characters.
+  </div>
+
+  <!-- No results -->
+  <div *ngIf="searched && searchResults.length === 0" class="no-results">
+    No users found.
+  </div>
+
+  <!-- Results -->
+  <div class="results">
+
+    <div
+      class="user-card"
+      *ngFor="let user of searchResults"
+      (click)="goToProfile(user.id)"
+    >
+      <img
+        [src]="user.profilePictureUrl || 'https://via.placeholder.com/80'"
+        class="profile-img"
+      />
+
+      <div class="info">
+        <h3>{{ user.name || user.username }}</h3>
+        <p>@{{ user.username }}</p>
+        <span *ngIf="user.location">📍 {{ user.location }}</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

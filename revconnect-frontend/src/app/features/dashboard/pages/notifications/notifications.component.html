@@ -1,0 +1,71 @@
+<div class="notifications-container">
+
+  <div class="header-row">
+    <h2>Notifications</h2>
+    <span class="badge" *ngIf="notifications.length > 0">
+      {{ notifications.length }} New
+    </span>
+  </div>
+
+  <!-- EMPTY STATE -->
+  <div *ngIf="notifications.length === 0" class="empty-state">
+    <mat-icon class="empty-icon">notifications_none</mat-icon>
+    <p>You're all caught up!</p>
+    <span>No new notifications at the moment.</span>
+  </div>
+
+  <!-- NOTIFICATION CARD -->
+  <div class="notification-card"
+       *ngFor="let n of notifications"
+       [class.unread]="!n.read">
+
+    <!-- PROFILE IMAGE -->
+    <div class="card-avatar">
+      <img *ngIf="n.senderProfilePictureUrl"
+           [src]="n.senderProfilePictureUrl"
+           class="profile-pic" />
+
+      <div *ngIf="!n.senderProfilePictureUrl"
+           class="profile-placeholder">
+        👤
+      </div>
+
+      <!-- SMALL TYPE ICON OVERLAY -->
+      <div class="type-icon">
+        <mat-icon *ngIf="n.type === 'LIKE'">favorite</mat-icon>
+        <mat-icon *ngIf="n.type === 'COMMENT'">chat_bubble</mat-icon>
+        <mat-icon *ngIf="n.type === 'CONNECTION_REQUEST'">person_add</mat-icon>
+        <mat-icon *ngIf="n.type === 'CONNECTION_ACCEPTED'">handshake</mat-icon>
+        <mat-icon *ngIf="n.type === 'CHAT'">chat</mat-icon>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="card-content">
+      <div class="message">
+        {{ n.message }}
+      </div>
+      <div class="time">
+        {{ n.createdAt | date:'medium' }}
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="card-actions">
+      <button class="action-btn"
+              *ngIf="!n.read"
+              (click)="markAsRead(n.id)"
+              title="Mark as read">
+        <mat-icon>check_circle_outline</mat-icon>
+      </button>
+
+      <button (click)="deleteNotification(n.id)"
+              class="delete-btn"
+              title="Delete">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
+  </div>
+
+</div>

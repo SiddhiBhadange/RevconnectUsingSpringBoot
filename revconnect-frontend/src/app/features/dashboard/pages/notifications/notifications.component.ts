@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { NotificationService } from '../../core/services/notification.service';
+import { NotificationService } from 'src/app/core/services/notification.service';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-notifications',
@@ -21,7 +21,7 @@ export class NotificationsComponent implements OnInit {
   }
 
   loadNotifications() {
-    this.http.get<any[]>('http://localhost:8080/api/notifications', {
+    this.http.get<any[]>('http://localhost:8081/api/notifications', {
       withCredentials: true
     }).subscribe(data => {
       this.notifications = data;
@@ -31,7 +31,7 @@ export class NotificationsComponent implements OnInit {
 
   markAsRead(id: number) {
   this.http.put(
-    `http://localhost:8080/api/notifications/${id}/read`,
+    `http://localhost:8081/api/notifications/${id}/read`,
     {},
     { withCredentials: true }
   ).subscribe(() => {
@@ -42,6 +42,18 @@ export class NotificationsComponent implements OnInit {
     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
   this.router.navigate([this.router.url]);
 });
+  });
+}
+deleteNotification(id: number) {
+
+  this.http.delete(
+    `http://localhost:8081/api/notifications/${id}`,
+    { withCredentials: true }
+  ).subscribe(() => {
+
+    this.notifications =
+      this.notifications.filter(n => n.id !== id);
+
   });
 }
 }

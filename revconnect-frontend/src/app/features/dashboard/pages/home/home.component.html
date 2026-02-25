@@ -2,61 +2,47 @@
 
   <h2>Feed</h2>
 
-  <!-- ================= CREATE POST ================= -->
+  <!-- Create Post -->
   <div class="create-post">
+    <textarea [(ngModel)]="newPost" placeholder="What's on your mind?"></textarea>
 
-    <textarea
-      [(ngModel)]="newPost"
-      placeholder="What's on your mind? Use #hashtags"
-      rows="3">
-    </textarea>
-
-    <!-- Upload Photo -->
-    <input type="file" (change)="onImageSelected($event)" />
-
-    <button (click)="createPost()" [disabled]="!newPost.trim()">
-      Post
-    </button>
-
+    <div class="post-actions-row"
+      style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+      <select [(ngModel)]="newPrivacy" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+        <option value="EVERYONE">Everyone</option>
+        <option value="CONNECTIONS_ONLY">Connections Only</option>
+      </select>
+      <button (click)="createPost()">Post</button>
+    </div>
   </div>
 
   <hr>
 
-  <!-- ================= POSTS ================= -->
+  <!-- Show Posts -->
   <div *ngFor="let post of posts" class="post-card">
-
     <div class="post-header">
       <h4 [routerLink]="['/dashboard/profile', post.userId]" class="profile-link">
         {{ post.username }}
       </h4>
-
-      <!-- DELETE POST -->
-      <button *ngIf="post.isOwner"
-              class="delete-btn"
-              (click)="deletePost(post)">
-        Delete
+      <button *ngIf="post.userId === currentUserId" class="delete-btn" (click)="deletePost(post)" title="Delete Post">
+        <mat-icon>delete</mat-icon>
       </button>
     </div>
+    <p>{{ post.content }}</p>
 
-    <!-- Content with hashtags -->
-    <p [innerHTML]="formatContent(post.content)"></p>
+    <div style="display: flex; justify-content: space-between; align-items: center; color: #666;">
+      <small>{{ post.createdAt | date:'short' }}</small>
+      <small style="font-size: 0.8em; background-color: #eee; padding: 2px 6px; border-radius: 10px;">
+        {{ post.privacy === 'CONNECTIONS_ONLY' ? '👥 Connections' : '🌎 Everyone' }}
+      </small>
+    </div>
 
-    <!-- Show Image -->
-    <img *ngIf="post.imageUrl"
-         [src]="post.imageUrl"
-         class="post-image" />
-
-    <small>{{ post.createdAt | date:'short' }}</small>
-
-    <!-- ACTIONS -->
     <div class="post-actions">
 
       <!-- LIKE -->
-      <div class="action-item"
-           (click)="toggleLike(post)"
-           [class.liked]="post.likedByCurrentUser">
+      <div class="action-item" (click)="toggleLike(post)" [class.liked]="post.likedByCurrentUser">
 
-        <mat-icon>
+        <mat-icon class="action-icon">
           {{ post.likedByCurrentUser ? 'favorite' : 'favorite_border' }}
         </mat-icon>
 
@@ -64,44 +50,30 @@
       </div>
 
       <!-- COMMENT -->
-      <div class="action-item"
-           (click)="toggleComments(post)">
-        <mat-icon>chat_bubble_outline</mat-icon>
+      <div class="action-item">
+        <mat-icon class="action-icon">chat_bubble_outline</mat-icon>
         <span>{{ post.commentCount }}</span>
       </div>
 
     </div>
+    <!-- Comment Section -->
+    <div class="comment-section">
 
-    <!-- COMMENTS -->
-    <div *ngIf="post.showComments" class="comment-section">
-
-      <div *ngFor="let comment of post.comments" class="comment-item">
-
-        <div class="comment-header">
-          <strong>{{ comment.username }}</strong>
-
-          <!-- DELETE COMMENT -->
-          <button *ngIf="comment.isOwner"
-                  class="delete-comment-btn"
-                  (click)="deleteComment(post, comment)">
-            ✕
-          </button>
-        </div>
-
-        <p>{{ comment.content }}</p>
-      </div>
-
-      <input
-        [(ngModel)]="post.newComment"
-        placeholder="Write a comment..." />
-
-      <button (click)="addComment(post)"
-              [disabled]="!post.newComment?.trim()">
-        Comment
+      <button class="comment-toggle-btn" (click)="toggleComments(post)">
+        View Comments
       </button>
 
+      <div *ngIf="post.showComments">
+
+        <div *ngFor="let comment of post.comments" class="comment-item">
+          <strong>{{ comment.username }}</strong>
+          <p>{{ comment.content }}</p>
+        </div>
+
+        <input class="comment-input" [(ngModel)]="post.newComment" placeholder="Write a comment..." />
+        <button class="comment-submit-btn" (click)="addComment(post)">
+          Comment
+        </button>
+      </div>
     </div>
-
   </div>
-
-</div>

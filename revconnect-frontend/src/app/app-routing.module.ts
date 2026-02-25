@@ -1,7 +1,10 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { NotificationsComponent } from './features/notifications/notifications.component';
+import { NotificationsComponent } from './features/dashboard/pages/notifications/notifications.component';
 import { ConnectionsComponent } from './features/connections/connections.component';
+import { SearchUserComponent } from './features/dashboard/pages/search-user/search-user.component';
+import { ProfileComponent } from './pages/profile/profile.component';
+import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
 
 const routes: Routes = [
   {
@@ -20,7 +23,14 @@ const routes: Routes = [
 },{
   path: 'connections',
   component: ConnectionsComponent
+},{
+  path: 'search',
+  component: SearchUserComponent
 },
+{
+  path: 'profile/:id',
+  component: ProfileComponent
+},{ path: 'chat/:id', component: ChatComponent },
   { path: '', redirectTo: 'auth/login', pathMatch: 'full' }
 ];
 @NgModule({

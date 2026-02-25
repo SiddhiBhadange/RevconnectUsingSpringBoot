@@ -1,167 +1,139 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { PostService } from '../../../../core/services/post.service';
 import { CommentService } from '../../../../core/services/comment.service';
-import { Post, Comment } from '../../dashboard.module';
+import { AuthService } from '../../../../features/auth/auth.service';
+import { Subscription, timer } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
-  posts: Post[] = [];
+  posts: any[] = [];
   newPost = '';
-  selectedImage: File | null = null;
+  newPrivacy = 'EVERYONE';
+  private pollingSubscription?: Subscription;
+  currentUserId: number | null = null;
 
-  constructor(
-    private postService: PostService,
-    private commentService: CommentService
-  ) {}
+  constructor(private postService: PostService,
+    private commentService: CommentService,
+    private authService: AuthService
+  ) { }
 
-  ngOnInit(): void {
-    this.loadPosts();
+  ngOnInit() {
+    this.authService.getCurrentUser().subscribe((user: any) => {
+      this.currentUserId = user.id;
+    });
+    this.startPollingPosts();
   }
 
-  // =========================
-  // IMAGE SELECT
-  // =========================
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.selectedImage = input.files?.[0] ?? null;
+  ngOnDestroy() {
+    if (this.pollingSubscription) {
+      this.pollingSubscription.unsubscribe();
+    }
   }
 
-  // =========================
-  // CREATE POST
-  // =========================
-  createPost(): void {
+  startPollingPosts() {
+    // Poll every 10 seconds for new posts
+    this.pollingSubscription = timer(0, 10000).pipe(
+      switchMap(() => this.postService.getAllPosts())
+    ).subscribe((data: any) => {
+      // Keep local state for open comments/likes when updating
+      this.updatePostsPreservingState(data);
+    });
+  }
 
-    if (!this.newPost.trim()) return;
-
-    const formData = new FormData();
-    formData.append('content', this.newPost);
-
-    if (this.selectedImage) {
-      formData.append('image', this.selectedImage);
+  updatePostsPreservingState(newPosts: any[]) {
+    if (this.posts.length === 0) {
+      this.posts = newPosts;
+      return;
     }
 
-    this.postService.createPost(formData)
-      .subscribe({
-        next: (created: Post) => {
-          this.posts.unshift(created);
-          this.newPost = '';
-          this.selectedImage = null;
+    // Merge new posts while keeping the local UI state (showComments, newComment)
+    this.posts = newPosts.map(newPost => {
+      const existingPost = this.posts.find(p => p.id === newPost.id);
+      if (existingPost) {
+        newPost.showComments = existingPost.showComments;
+        newPost.newComment = existingPost.newComment;
+        if (existingPost.showComments && !newPost.comments) {
+          newPost.comments = existingPost.comments;
+        }
+      }
+      return newPost;
+    });
+  }
+
+
+  createPost() {
+    if (!this.newPost.trim()) return;
+
+    this.postService.createPost(this.newPost, this.newPrivacy).subscribe(() => {
+      this.newPost = '';
+      this.newPrivacy = 'EVERYONE';
+      this.loadPosts();
+    });
+  }
+
+  deletePost(post: any) {
+    if (confirm('Are you sure you want to delete this post?')) {
+      this.postService.deletePost(post.id).subscribe({
+        next: () => {
+          this.posts = this.posts.filter(p => p.id !== post.id);
         },
-        error: (err) => console.error('Create post failed', err)
+        error: (err) => console.error('Failed to delete post:', err)
       });
+    }
   }
-
-  // =========================
-  // LOAD POSTS
-  // =========================
-  loadPosts(): void {
-    this.postService.getAllPosts()
-      .subscribe({
-        next: (data: Post[]) => {
-          this.posts = data;
-        },
-        error: (err) => console.error('Load posts failed', err)
-      });
+  loadPosts() {
+    this.postService.getAllPosts().subscribe((data: any) => {
+      console.log("POSTS:", data);
+      this.posts = data;
+    });
   }
-
-  // =========================
-  // DELETE POST
-  // =========================
-  deletePost(post: Post): void {
-    this.postService.deletePost(post.id)
-      .subscribe(() => {
-        this.posts = this.posts.filter(p => p.id !== post.id);
-      });
-  }
-
-  // =========================
-  // DELETE COMMENT
-  // =========================
-  deleteComment(post: Post, comment: Comment): void {
-
-    this.commentService.deleteComment(comment.id)
-      .subscribe(() => {
-
-        post.comments = post.comments?.filter(c => c.id !== comment.id);
-        post.commentCount = Math.max(0, post.commentCount - 1);
-
-      });
-  }
-
-  // =========================
-  // LIKE / UNLIKE
-  // =========================
-  toggleLike(post: Post): void {
+  toggleLike(post: any) {
 
     if (post.likedByCurrentUser) {
 
-      this.postService.unlikePost(post.id)
-        .subscribe(() => {
-          post.likedByCurrentUser = false;
-          post.likeCount = Math.max(0, post.likeCount - 1);
-        });
+      // UNLIKE
+      this.postService.unlikePost(post.id).subscribe(() => {
+        post.likedByCurrentUser = false;
+        post.likeCount--;
+      });
 
     } else {
 
-      this.postService.likePost(post.id)
-        .subscribe(() => {
-          post.likedByCurrentUser = true;
-          post.likeCount++;
-        });
+      // LIKE
+      this.postService.likePost(post.id).subscribe(() => {
+        post.likedByCurrentUser = true;
+        post.likeCount++;
+      });
 
     }
   }
-
-  // =========================
-  // TOGGLE COMMENTS
-  // =========================
-  toggleComments(post: Post): void {
-
+  toggleComments(post: any) {
     post.showComments = !post.showComments;
 
     if (post.showComments && !post.comments) {
-      this.commentService.getComments(post.id)
-        .subscribe((res: Comment[]) => {
-          post.comments = res;
-        });
+      this.commentService.getComments(post.id).subscribe(res => {
+        post.comments = res;
+      });
     }
   }
 
-  // =========================
-  // ADD COMMENT
-  // =========================
-  addComment(post: Post): void {
-
-    if (!post.newComment?.trim()) return;
+  addComment(post: any) {
+    if (!post.newComment) return;
 
     this.commentService.addComment(post.id, post.newComment)
-      .subscribe((newComment: Comment) => {
-
+      .subscribe(() => {
         post.newComment = '';
-
-        if (!post.comments) {
-          post.comments = [];
-        }
-
-        post.comments.unshift(newComment);
-        post.commentCount++;
-
+        this.commentService.getComments(post.id)
+          .subscribe(res => {
+            post.comments = res;
+            post.commentCount = res.length;
+          });
       });
   }
-
-  // =========================
-  // FORMAT HASHTAGS
-  // =========================
-  formatContent(content: string): string {
-    return content.replace(
-      /#(\w+)/g,
-      '<span class="hashtag">#$1</span>'
-    );
-  }
-
 }
