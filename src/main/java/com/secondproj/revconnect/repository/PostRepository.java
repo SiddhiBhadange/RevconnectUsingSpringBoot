@@ -20,4 +20,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Transactional
     void deleteByUserId(Long userId);
+
+    long countByUser(User user);
 }

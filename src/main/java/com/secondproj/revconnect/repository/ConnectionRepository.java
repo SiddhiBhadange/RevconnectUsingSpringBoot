@@ -11,26 +11,11 @@ import java.util.Optional;
 
 public interface ConnectionRepository extends JpaRepository<Connection, Long> {
 
-    //  Check duplicate request (A → B)
-    boolean existsBySenderAndReceiver(User sender, User receiver);
     //  Get pending requests received
     List<Connection> findByReceiverAndStatus(User receiver, String status);
 
     //  Get pending requests sent
     List<Connection> findBySenderAndStatus(User sender, String status);
-
-    //  Get accepted connections (both sides)
-    List<Connection> findBySenderOrReceiverAndStatus(
-            User sender,
-            User receiver,
-            String status
-    );
-
-    //  Find connection between two users
-    Optional<Connection> findBySenderAndReceiver(User sender, User receiver);
-
-    //  Delete connection directly
-    void deleteBySenderAndReceiver(User sender, User receiver);
 
     @Query("""
 SELECT c FROM Connection c
@@ -42,6 +27,5 @@ WHERE (c.sender.id = :user1 AND c.receiver.id = :user2)
             @Param("user2") Long user2
     );
 
-    void deleteBySenderId(Long senderId);
-    void deleteByReceiverId(Long receiverId);
+    long countByReceiverIdAndStatus(Long id, String accepted);
 }
