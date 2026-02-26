@@ -3,6 +3,7 @@ package com.secondproj.revconnect.service;
 import com.secondproj.revconnect.model.Notification;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.NotificationRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class NotificationService {
         Notification notification = new Notification();
 
         notification.setUser(receiver);     // receiver
-        notification.setSender(sender);     // 🔥 sender (NEW)
+        notification.setSender(sender);     // sender (NEW)
         notification.setType(type);
         notification.setMessage(message);
         notification.setRead(false);

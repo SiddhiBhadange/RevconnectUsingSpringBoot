@@ -32,7 +32,7 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // ✅ REGISTER (role decided by backend)
+    // REGISTER (role decided by backend)
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO dto) {
 
@@ -40,13 +40,13 @@ public class AuthController {
                 dto.getEmail(),
                 dto.getUsername(),
                 dto.getPassword(),
-                Role.PERSONAL   // ✅ default role
+                Role.PERSONAL
         );
 
         return ResponseEntity.ok().build();
     }
 
-    // ✅ LOGIN (JWT in HttpOnly Cookie)
+    // LOGIN
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody LoginRequestDTO dto,
@@ -80,7 +80,7 @@ public class AuthController {
         }
     }
 
-    // ✅ LOGOUT
+    // LOGOUT
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
         Cookie cookie = new Cookie("jwt", null);

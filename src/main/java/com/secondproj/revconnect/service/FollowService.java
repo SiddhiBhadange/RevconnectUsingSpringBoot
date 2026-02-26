@@ -3,12 +3,14 @@ package com.secondproj.revconnect.service;
 import com.secondproj.revconnect.model.Follow;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.FollowRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class FollowService {
 
     @Autowired
