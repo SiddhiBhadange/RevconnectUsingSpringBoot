@@ -6,7 +6,7 @@ import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.UserRepository;
 import com.secondproj.revconnect.service.ConnectionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,9 +26,14 @@ public class ConnectionController {
     // =============================
     @PostMapping("/request/{userId}")
     public String sendRequest(
-            @AuthenticationPrincipal User sender,
+            Authentication authentication,
             @PathVariable Long userId
     ) {
+        String username = authentication.getName();
+
+        User sender = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         if (sender.getId().equals(userId)) {
             throw new RuntimeException("You cannot connect with yourself");
         }
@@ -46,11 +51,17 @@ public class ConnectionController {
     // =============================
     @PostMapping("/respond/{requestId}")
     public String respond(
-            @AuthenticationPrincipal User user,
+            Authentication authentication,
             @PathVariable Long requestId,
             @RequestParam String status
     ) {
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         connectionService.respondRequest(user, requestId, status);
+
         return "Request " + status;
     }
 
@@ -59,8 +70,13 @@ public class ConnectionController {
     // =============================
     @GetMapping("/pending")
     public List<ConnectionResponseDTO> getPending(
-            @AuthenticationPrincipal User user
+            Authentication authentication
     ) {
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         return connectionService.getPendingRequests(user)
                 .stream()
                 .map(this::mapToDTO)
@@ -68,36 +84,54 @@ public class ConnectionController {
     }
 
     // =============================
-    // GET MY CONNECTIONS
+    // GET MY ACCEPTED CONNECTIONS
     // =============================
     @GetMapping
     public List<ConnectionResponseDTO> getConnections(
-            @AuthenticationPrincipal User user
+            Authentication authentication
     ) {
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         return connectionService.getConnections(user)
                 .stream()
                 .map(this::mapToDTO)
                 .toList();
     }
+
     // =============================
-// GET CONNECTION STATUS WITH USER
-// =============================
+    // GET CONNECTION STATUS WITH USER
+    // =============================
     @GetMapping("/status/{userId}")
     public ConnectionResponseDTO getStatus(
-            @AuthenticationPrincipal User currentUser,
+            Authentication authentication,
             @PathVariable Long userId
     ) {
+        String username = authentication.getName();
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         return connectionService.getConnectionStatus(currentUser, userId);
     }
+
     // =============================
-// REMOVE CONNECTION
-// =============================
+    // REMOVE CONNECTION
+    // =============================
     @DeleteMapping("/remove/{userId}")
     public String removeConnection(
-            @AuthenticationPrincipal User currentUser,
+            Authentication authentication,
             @PathVariable Long userId
     ) {
+        String username = authentication.getName();
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
         connectionService.removeConnection(currentUser, userId);
+
         return "Connection removed";
     }
 

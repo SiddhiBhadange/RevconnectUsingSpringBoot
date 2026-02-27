@@ -20,7 +20,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService userDetailsService;
 
-    // ✅ Skip JWT for public endpoints
+    // Skip JWT for public endpoints
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
@@ -33,19 +33,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
-
+        System.out.println("Authorization header: " + request.getHeader("Authorization"));
         try {
 
             String token = null;
             String username = null;
 
             // Read JWT from cookie
-            if (request.getCookies() != null) {
-                for (Cookie cookie : request.getCookies()) {
-                    if ("jwt".equals(cookie.getName())) {
-                        token = cookie.getValue();
-                    }
-                }
+//            if (request.getCookies() != null) {
+//                for (Cookie cookie : request.getCookies()) {
+//                    if ("jwt".equals(cookie.getName())) {
+//                        token = cookie.getValue();
+//                    }
+//                }
+//            }
+            // Read JWT from Authorization header
+            String authHeader = request.getHeader("Authorization");
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                token = authHeader.substring(7);
             }
 
             // Extract username from token
@@ -53,7 +59,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 username = jwtUtil.getUsernameFromToken(token);
             }
 
-            // Authenticate only if valid and not already authenticated
             if (username != null &&
                     SecurityContextHolder.getContext().getAuthentication() == null &&
                     jwtUtil.validateToken(token)) {
@@ -75,7 +80,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
         } catch (Exception e) {
-            // 🔥 NEVER break request because of JWT
             SecurityContextHolder.clearContext();
         }
 

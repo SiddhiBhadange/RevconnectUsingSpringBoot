@@ -4,16 +4,14 @@ import com.secondproj.revconnect.dto.UserResponseDTO;
 import com.secondproj.revconnect.model.Role;
 import com.secondproj.revconnect.model.User;
 import com.secondproj.revconnect.repository.*;
-import com.secondproj.revconnect.service.PostService;
 import com.secondproj.revconnect.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -24,18 +22,23 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
     @Autowired
     private PostRepository postRepository;
+
     @Autowired
     private NotificationRepository notificationRepository;
-    @Autowired
-    private ConnectionRepository connectionRepository;
+
     @Autowired
     private FollowRepository followRepository;
 
-    // 🔎 Search by username
+    /*  SEARCH USERS */
+
+
     @GetMapping("/search")
-    public ResponseEntity<List<UserResponseDTO>> search(@RequestParam String keyword) {
+    public ResponseEntity<List<UserResponseDTO>> search(
+            @RequestParam String keyword
+    ) {
 
         List<User> users = userService.searchUsers(keyword);
 
@@ -46,27 +49,45 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // ✅ Get logged-in user
-    @GetMapping("/me")
-    public UserResponseDTO getMyProfile(@AuthenticationPrincipal User user) {
+    /* ============================================= */
+    /* 👤 GET LOGGED-IN USER */
+    /* ============================================= */
 
-        if (user == null) {
-            throw new RuntimeException("User not authenticated");
+    @GetMapping("/me")
+    public ResponseEntity<UserResponseDTO> getMyProfile(
+            Authentication authentication
+    ) {
+
+        if (authentication == null) {
+            return ResponseEntity.status(403).build();
         }
 
-        return mapToUserDTO(user);
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return ResponseEntity.ok(mapToUserDTO(user));
     }
 
-    // ✅ Update logged-in user
+    /* ============================================= */
+    /* ✏ UPDATE PROFILE */
+    /* ============================================= */
+
     @PutMapping("/me")
-    public UserResponseDTO updateProfile(
-            @AuthenticationPrincipal User currentUser,
+    public ResponseEntity<UserResponseDTO> updateProfile(
+            Authentication authentication,
             @RequestBody UserResponseDTO dto
     ) {
 
-        if (currentUser == null) {
-            throw new RuntimeException("User not authenticated");
+        if (authentication == null) {
+            return ResponseEntity.status(403).build();
         }
+
+        String username = authentication.getName();
+
+        User currentUser = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Basic fields
         currentUser.setName(dto.getName());
@@ -75,12 +96,12 @@ public class UserController {
         currentUser.setWebsite(dto.getWebsite());
         currentUser.setProfilePictureUrl(dto.getProfilePictureUrl());
 
-        // 🔥 UPDATE ROLE
+        // Role update
         if (dto.getRoles() != null && !dto.getRoles().isEmpty()) {
             currentUser.setRoles(dto.getRoles());
         }
 
-        // 🔥 BUSINESS FIELDS
+        // Business / Creator fields
         if (currentUser.getRoles().contains(Role.BUSINESS) ||
                 currentUser.getRoles().contains(Role.CREATOR)) {
 
@@ -90,7 +111,6 @@ public class UserController {
             currentUser.setContactInfo(dto.getContactInfo());
 
         } else {
-            // Clear if personal
             currentUser.setBusinessCategory(null);
             currentUser.setBusinessAddress(null);
             currentUser.setBusinessHours(null);
@@ -99,18 +119,60 @@ public class UserController {
 
         User savedUser = userRepository.save(currentUser);
 
-        return mapToUserDTO(savedUser);
+        return ResponseEntity.ok(mapToUserDTO(savedUser));
     }
-    // ✅ Get any user by ID (view profile)
+
+    /* ============================================= */
+    /* 👁 VIEW ANY USER BY ID */
+    /* ============================================= */
+
     @GetMapping("/{userId:\\d+}")
-    public UserResponseDTO getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserResponseDTO> getUser(
+            @PathVariable Long userId
+    ) {
+
         User user = userService.getUserById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return mapToUserDTO(user);
+        return ResponseEntity.ok(mapToUserDTO(user));
     }
 
-    // 🔁 ENTITY → DTO
+    /* ============================================= */
+    /* 🗑 DELETE OWN PROFILE */
+    /* ============================================= */
+
+    @DeleteMapping("/me")
+    public ResponseEntity<Void> deleteMyProfile(
+            Authentication authentication
+    ) {
+
+        if (authentication == null) {
+            return ResponseEntity.status(403).build();
+        }
+
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Long userId = user.getId();
+
+        // Delete related data first
+        postRepository.deleteByUserId(userId);
+        notificationRepository.deleteByUserId(userId);
+        followRepository.deleteByFollowerId(userId);
+        followRepository.deleteByFollowingId(userId);
+
+        // Delete user
+        userRepository.deleteById(userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    /* ============================================= */
+    /* 🔁 ENTITY → DTO */
+    /* ============================================= */
+
     private UserResponseDTO mapToUserDTO(User user) {
 
         UserResponseDTO dto = new UserResponseDTO();
@@ -125,7 +187,6 @@ public class UserController {
         dto.setWebsite(user.getWebsite());
         dto.setProfilePictureUrl(user.getProfilePictureUrl());
 
-        // 🔥 ADD THESE
         dto.setBusinessCategory(user.getBusinessCategory());
         dto.setBusinessAddress(user.getBusinessAddress());
         dto.setBusinessHours(user.getBusinessHours());
@@ -133,28 +194,4 @@ public class UserController {
 
         return dto;
     }
-    @DeleteMapping("/me")
-    public ResponseEntity<String> deleteMyProfile(@AuthenticationPrincipal User currentUser) {
-
-        if (currentUser == null) {
-            return ResponseEntity.status(401).body("Not authenticated");
-        }
-//        connectionRepository.deleteBySenderId(currentUser.getId());
-//        connectionRepository.deleteByReceiverId(currentUser.getId());
-        // Delete posts first
-        postRepository.deleteByUserId(currentUser.getId());
-
-        // Delete notifications
-        notificationRepository.deleteByUserId(currentUser.getId());
-
-        // Delete follows
-        followRepository.deleteByFollowerId(currentUser.getId());
-        followRepository.deleteByFollowingId(currentUser.getId());
-
-        // Then delete user
-        userRepository.deleteById(currentUser.getId());
-
-        return ResponseEntity.ok("Profile deleted successfully");
-    }
-
 }

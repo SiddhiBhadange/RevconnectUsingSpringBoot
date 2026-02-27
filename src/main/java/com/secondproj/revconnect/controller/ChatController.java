@@ -47,7 +47,7 @@ public class ChatController {
 
             notificationService.createNotification(
                     receiver,                     // receiver
-                    sender,                       // 🔥 sender (NEW)
+                    sender,                       //  sender (NEW)
                     "CHAT",
                     sender.getUsername() + " sent you a message"
             );

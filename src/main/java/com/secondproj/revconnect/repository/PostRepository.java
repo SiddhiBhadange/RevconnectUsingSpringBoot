@@ -12,8 +12,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     List<Post> findByUser(User user);
 
-    List<Post> findByHashtagsContaining(String hashtag);
-
     List<Post> findAllByOrderByCreatedAtDesc();
 
     List<Post> getPostsByUserId(Long userId);

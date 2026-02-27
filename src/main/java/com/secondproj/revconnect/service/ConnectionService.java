@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ConnectionService {
@@ -19,15 +18,15 @@ public class ConnectionService {
     @Autowired
     private NotificationService notificationService;
 
-    // Send Connection Request
+    // =============================
+    // SEND CONNECTION REQUEST
+    // =============================
     public void sendRequest(User sender, User receiver) {
 
-        // Prevent self request
         if (sender.getId().equals(receiver.getId())) {
             throw new RuntimeException("You cannot connect with yourself");
         }
 
-        // Prevent duplicate requests
         List<Connection> existing =
                 connectionRepository.findBetweenUsers(
                         sender.getId(),
@@ -35,17 +34,45 @@ public class ConnectionService {
                 );
 
         if (!existing.isEmpty()) {
-            throw new RuntimeException("Connection already exists");
+
+            Connection connection = existing.get(0);
+
+            // If already connected
+            if ("ACCEPTED".equals(connection.getStatus())) {
+                throw new RuntimeException("Already connected");
+            }
+
+            // If already pending
+            if ("PENDING".equals(connection.getStatus())) {
+                throw new RuntimeException("Request already pending");
+            }
+
+            // If rejected before → allow resend
+            if ("REJECTED".equals(connection.getStatus())) {
+                connection.setStatus("PENDING");
+                connection.setSender(sender);
+                connection.setReceiver(receiver);
+                connectionRepository.save(connection);
+
+                notificationService.createNotification(
+                        receiver,
+                        sender,
+                        "CONNECTION_REQUEST",
+                        sender.getUsername() + " sent you a connection request"
+                );
+
+                return;
+            }
         }
 
+        // Create new request
         Connection connection = new Connection();
         connection.setSender(sender);
         connection.setReceiver(receiver);
         connection.setStatus("PENDING");
 
         connectionRepository.save(connection);
-        //  Send Notification
-        // Send Notification (Connection Request)
+
         notificationService.createNotification(
                 receiver,
                 sender,
@@ -54,13 +81,14 @@ public class ConnectionService {
         );
     }
 
-    //  Respond to Request (ACCEPT / REJECT)
+    // =============================
+    // ACCEPT / REJECT REQUEST
+    // =============================
     public void respondRequest(User currentUser, Long requestId, String status) {
 
         Connection connection = connectionRepository.findById(requestId)
                 .orElseThrow(() -> new RuntimeException("Request not found"));
 
-        // 🔒 Only receiver can respond
         if (!connection.getReceiver().getId().equals(currentUser.getId())) {
             throw new RuntimeException("You are not authorized to respond");
         }
@@ -70,23 +98,39 @@ public class ConnectionService {
 
         if ("ACCEPTED".equalsIgnoreCase(status)) {
             notificationService.createNotification(
-                    connection.getSender(),   // receiver
-                    currentUser,              // 🔥 sender
+                    connection.getSender(),
+                    currentUser,
                     "CONNECTION_ACCEPTED",
                     currentUser.getUsername() + " accepted your connection request"
             );
         }
     }
 
-    //  Get Pending Requests
+    // =============================
+    // GET PENDING RECEIVED REQUESTS
+    // =============================
     public List<Connection> getPendingRequests(User user) {
         return connectionRepository.findByReceiverAndStatus(user, "PENDING");
     }
 
-    //  Get My Connections
+    // =============================
+    // GET ACCEPTED CONNECTIONS
+    // =============================
     public List<Connection> getConnections(User user) {
-        return connectionRepository.findBySenderAndStatus(user, "PENDING");
+
+        return connectionRepository.findAll()
+                .stream()
+                .filter(c ->
+                        "ACCEPTED".equals(c.getStatus()) &&
+                                (c.getSender().getId().equals(user.getId()) ||
+                                        c.getReceiver().getId().equals(user.getId()))
+                )
+                .toList();
     }
+
+    // =============================
+    // GET CONNECTION STATUS (UI)
+    // =============================
     public ConnectionResponseDTO getConnectionStatus(User currentUser, Long targetUserId) {
 
         List<Connection> connections =
@@ -102,11 +146,12 @@ public class ConnectionService {
             return dto;
         }
 
-        // Just take the first one (safe even if duplicates exist)
         Connection connection = connections.get(0);
         dto.setId(connection.getId());
 
-        if ("PENDING".equals(connection.getStatus())) {
+        String status = connection.getStatus();
+
+        if ("PENDING".equals(status)) {
 
             if (connection.getSender().getId().equals(currentUser.getId())) {
                 dto.setStatus("PENDING_SENT");
@@ -114,12 +159,18 @@ public class ConnectionService {
                 dto.setStatus("PENDING_RECEIVED");
             }
 
-        } else if ("ACCEPTED".equals(connection.getStatus())) {
+        } else if ("ACCEPTED".equals(status)) {
             dto.setStatus("CONNECTED");
+        } else {
+            dto.setStatus("NONE");
         }
 
         return dto;
     }
+
+    // =============================
+    // REMOVE CONNECTION
+    // =============================
     public void removeConnection(User currentUser, Long targetUserId) {
 
         List<Connection> connections =
