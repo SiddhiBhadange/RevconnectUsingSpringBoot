@@ -35,3 +35,21 @@ mat-form-field {
   width: 100%;
   margin-bottom: 15px;
 }
+.full-width {
+  width: 100%;
+}
+
+.forgot-password {
+  text-align: right;
+  margin-bottom: 15px;
+}
+
+.forgot-password a {
+  font-size: 13px;
+  text-decoration: none;
+  color: #0a66c2;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}

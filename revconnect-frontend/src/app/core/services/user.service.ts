@@ -11,6 +11,6 @@ export class UserService {
     constructor(private http: HttpClient) { }
 
     searchUsers(query: string): Observable<any[]> {
-        return this.http.get<any[]>(`${this.API_URL}/search-users?query=${encodeURIComponent(query)}`, { withCredentials: true });
+        return this.http.get<any[]>(`${this.API_URL}/search-users?query=${encodeURIComponent(query)}`);
     }
 }

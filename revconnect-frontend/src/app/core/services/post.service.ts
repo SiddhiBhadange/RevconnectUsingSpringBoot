@@ -9,35 +9,32 @@ export class PostService {
   constructor(private http: HttpClient) { }
 
   getAllPosts() {
-    return this.http.get(this.API_URL, { withCredentials: true });
+    return this.http.get(this.API_URL);
   }
 
   createPost(content: string, privacy: string = 'EVERYONE') {
     return this.http.post(
       this.API_URL,
-      { content, privacy },
-      { withCredentials: true }
+      { content, privacy }
     );
   }
 
   deletePost(postId: number) {
     return this.http.delete(
       `${this.API_URL}/${postId}`,
-      { withCredentials: true, responseType: 'text' }
+      { responseType: 'text' }
     );
   }
   likePost(postId: number) {
     return this.http.post(
       `http://localhost:8080/api/likes/${postId}`,
-      {},
-      { withCredentials: true }
+      {}
     );
   }
 
   unlikePost(postId: number) {
     return this.http.delete(
-      `http://localhost:8080/api/likes/${postId}`,
-      { withCredentials: true }
+      `http://localhost:8080/api/likes/${postId}`
     );
   }
 }

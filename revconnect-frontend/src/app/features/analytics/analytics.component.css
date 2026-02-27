@@ -1,0 +1,80 @@
+/* Page Background */
+body {
+  background-color: #f3f2ef;
+}
+
+/* Main Container */
+.analytics-container {
+  max-width: 1100px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+/* Title */
+.analytics-title {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 25px;
+  color: #191919;
+}
+
+/* Grid Layout */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Card */
+.analytics-card {
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.analytics-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-2px);
+}
+
+/* Label */
+.analytics-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* Number */
+.analytics-number {
+  font-size: 28px;
+  font-weight: 600;
+  color: #0a66c2; /* LinkedIn blue */
+}
+
+/* Mini Graph Bar */
+.analytics-card::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 6px;
+  width: 100%;
+  background: linear-gradient(90deg, #0a66c2, #4dabf7);
+}
+.mini-bar {
+  height: 6px;
+  background: #e6e6e6;
+  border-radius: 4px;
+  margin-top: 12px;
+  overflow: hidden;
+}
+
+.mini-fill {
+  height: 100%;
+  background: #0a66c2;
+  transition: width 0.6s ease;
+}

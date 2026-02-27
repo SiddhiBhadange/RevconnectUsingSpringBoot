@@ -15,6 +15,9 @@ import { NotificationsComponent } from './features/dashboard/pages/notifications
 import { ConnectionsComponent } from './features/connections/connections.component';
 import { SearchUserComponent } from './features/dashboard/pages/search-user/search-user.component';
 import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
+import { AnalyticsComponent } from './features/analytics/analytics.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './core/auth.interceptor';
 
 
 @NgModule({
@@ -25,7 +28,8 @@ import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
     NotificationsComponent,
     ConnectionsComponent,
     SearchUserComponent,
-    ChatComponent
+    ChatComponent,
+    AnalyticsComponent
   ],
   imports: [
     BrowserModule,
@@ -38,7 +42,13 @@ import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
     MatIconModule,
     FormsModule
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  providers: [
+  {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AuthInterceptor,
+    multi: true
+  }
+]
 })
 export class AppModule { }

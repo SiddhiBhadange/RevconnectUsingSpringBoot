@@ -21,8 +21,7 @@ export class ChatComponent implements OnInit {
 
   ngOnInit(): void {
 
-  this.http.get<any>('http://localhost:8080/api/users/me',
-    { withCredentials: true })
+  this.http.get<any>('http://localhost:8080/api/users/me')
     .subscribe(user => {
       this.currentUser = user;
     });
@@ -31,7 +30,7 @@ export class ChatComponent implements OnInit {
 
   this.loadMessages();
 
-  // 🔥 ADD THIS (Polling every 2 seconds)
+  // ADD THIS (Polling every 2 seconds)
   setInterval(() => {
     this.loadMessages();
   }, 2000);
@@ -39,8 +38,7 @@ export class ChatComponent implements OnInit {
 
   loadMessages() {
     this.http.get<any[]>(
-      `http://localhost:8080/api/chat/${this.receiverId}`,
-      { withCredentials: true }
+      `http://localhost:8080/api/chat/${this.receiverId}`
     ).subscribe(data => {
       this.messages = data;
     });
@@ -52,8 +50,7 @@ export class ChatComponent implements OnInit {
 
     this.http.post(
       `http://localhost:8080/api/chat/${this.receiverId}`,
-      this.newMessage,
-      { withCredentials: true }
+      this.newMessage
     ).subscribe(() => {
 
       this.newMessage = '';

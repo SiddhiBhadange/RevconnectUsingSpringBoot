@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth.service';
 
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -32,24 +33,33 @@ export class LoginComponent {
   this.success = '';
   const { usernameOrEmail, password } = this.loginForm.value;
 
-  this.authService.login(usernameOrEmail, password).subscribe({
-    next: () => {
-        this.success = 'Login successful!';
-      this.router.navigate(['/dashboard']);
-    },
-  error: (err) => {
-  console.error('Login error:', err);
+ this.authService.login(usernameOrEmail, password).subscribe({
+  next: (response: any) => {
 
-  if (err.status === 401) {
-    this.error = 'Invalid username or password';
-  } else if (err.status === 403) {
-    this.error = 'Access denied';
-  } else if (err.error?.message) {
-    this.error = err.error.message;
-  } else {
-    this.error = 'Login failed. Please try again.';
+    localStorage.setItem('token', response.token);
+
+    this.success = 'Login successful!';
+    this.router.navigate(['/dashboard']);
+  },
+  error: (err) => {
+    console.error('Login error:', err);
+
+    if (err.status === 401) {
+      this.error = 'Invalid username or password';
+    } else if (err.status === 403) {
+      this.error = 'Access denied';
+    } else if (err.error?.message) {
+      this.error = err.error.message;
+    } else {
+
+      this.error = 'Login failed. Please try again.';
+    }
+  }
+});
+  }
+  ngOnInit(): void {
+  if (localStorage.getItem('token')) {
+    this.router.navigate(['/dashboard']);
   }
 }
-  });
 }
-  }

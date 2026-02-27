@@ -9,6 +9,12 @@ export class AppComponent {
   constructor(private authService: AuthService) {}
 
 ngOnInit() {
-  this.authService.checkAuth().subscribe();
+  const token = localStorage.getItem('token');
+
+  if (token) {
+    this.authService.getCurrentUser().subscribe();
+  }
+   this.authService.restoreSession();
 }
 }
+

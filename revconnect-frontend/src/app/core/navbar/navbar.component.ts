@@ -60,12 +60,11 @@ export class NavbarComponent implements OnInit {
     this.notificationService.stopPolling();
   }
 
-  logout() {
-    this.authService.logout().subscribe(() => {
-      this.notificationService.stopPolling();
-      this.router.navigate(['/auth/login']);
-    });
-  }
+logout() {
+  this.authService.logout();
+  this.notificationService.stopPolling();
+  this.router.navigate(['/auth/login']);
+}
 
   onSearch() {
     if (!this.searchQuery.trim()) {

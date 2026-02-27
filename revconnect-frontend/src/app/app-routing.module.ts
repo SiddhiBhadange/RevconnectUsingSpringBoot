@@ -5,6 +5,8 @@ import { ConnectionsComponent } from './features/connections/connections.compone
 import { SearchUserComponent } from './features/dashboard/pages/search-user/search-user.component';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { ChatComponent } from './features/dashboard/pages/chat/chat.component';
+import { AnalyticsComponent } from './features/analytics/analytics.component';
+import { AuthGuard } from './core/auth.guard';
 
 const routes: Routes = [
   {
@@ -14,24 +16,34 @@ const routes: Routes = [
   },
   {
     path: 'dashboard',
+    canActivate: [AuthGuard],
     loadChildren: () =>
       import('./features/dashboard/dashboard.module').then(m => m.DashboardModule)
   },
   {
   path: 'notifications',
-  component: NotificationsComponent
+  component: NotificationsComponent,
+  canActivate: [AuthGuard] 
 },{
   path: 'connections',
-  component: ConnectionsComponent
+  component: ConnectionsComponent,
+  canActivate: [AuthGuard] 
 },{
   path: 'search',
-  component: SearchUserComponent
+  component: SearchUserComponent,
+  canActivate: [AuthGuard] 
 },
 {
   path: 'profile/:id',
-  component: ProfileComponent
-},{ path: 'chat/:id', component: ChatComponent },
-  { path: '', redirectTo: 'auth/login', pathMatch: 'full' }
+  component: ProfileComponent,
+  canActivate: [AuthGuard]
+},{ path: 'chat/:id', component: ChatComponent,
+  canActivate: [AuthGuard] 
+ },
+  { path: '', redirectTo: 'auth/login', pathMatch: 'full' },
+  { path: 'analytics', component: AnalyticsComponent,
+    canActivate: [AuthGuard] 
+   }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

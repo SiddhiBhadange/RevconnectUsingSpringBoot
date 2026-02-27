@@ -3,6 +3,7 @@ import { BehaviorSubject, timer, Subscription } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,7 +21,7 @@ export class NotificationService {
     }
     // Poll every 10 seconds
     this.pollingSubscription = timer(0, 10000).pipe(
-      switchMap(() => this.http.get<number>('http://localhost:8080/api/notifications/unread-count', { withCredentials: true })),
+      switchMap(() => this.http.get<number>('http://localhost:8080/api/notifications/unread-count')),
       tap(count => this.unreadCountSubject.next(count))
     ).subscribe();
   }
@@ -33,8 +34,7 @@ export class NotificationService {
 
   refreshUnreadCount() {
     this.http.get<number>(
-      'http://localhost:8080/api/notifications/unread-count',
-      { withCredentials: true }
+      'http://localhost:8080/api/notifications/unread-count'
     ).subscribe(count => {
       this.unreadCountSubject.next(count);
     });

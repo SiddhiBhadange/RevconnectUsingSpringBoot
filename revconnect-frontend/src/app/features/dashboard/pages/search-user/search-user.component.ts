@@ -30,8 +30,7 @@ export class SearchUserComponent {
     }
 
    this.http.get<any[]>(
-  `http://localhost:8080/api/users/search?keyword=${query}`,
-  { withCredentials: true }
+  `http://localhost:8080/api/users/search?keyword=${query}`
 ).subscribe({
       next: (res) => {
         this.searchResults = Array.isArray(res) ? res : [res];

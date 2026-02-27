@@ -9,16 +9,13 @@ export class CommentService {
   constructor(private http: HttpClient) {}
 
   getComments(postId: number) {
-    return this.http.get<any[]>(`${this.API}/${postId}`, {
-      withCredentials: true
-    });
+    return this.http.get<any[]>(`${this.API}/${postId}`);
   }
 
   addComment(postId: number, content: string) {
     return this.http.post(
       `${this.API}/${postId}`,
-      { content },
-      { withCredentials: true }
+      { content }
     );
   }
   
