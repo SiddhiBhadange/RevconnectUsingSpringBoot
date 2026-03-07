@@ -144,23 +144,27 @@ public class FollowController {
         return ResponseEntity.ok("Unfollowed successfully");
     }
     @GetMapping("/followers/{userId}")
-    public List<UserResponseDTO> getFollowers(@PathVariable Long userId) {
+    public List<UserResponseDTO> getFollowers(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser) {
 
         return followRepository.findFollowersByUserId(userId)
                 .stream()
-                .map(this::mapToUserDTO)
+                .map(user -> mapToUserDTO(user, currentUser))
                 .toList();
     }
 
     @GetMapping("/following/{userId}")
-    public List<UserResponseDTO> getFollowing(@PathVariable Long userId) {
+    public List<UserResponseDTO> getFollowing(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal User currentUser) {
 
         return followRepository.findFollowingByUserId(userId)
                 .stream()
-                .map(this::mapToUserDTO)
+                .map(user -> mapToUserDTO(user, currentUser))
                 .toList();
     }
-    private UserResponseDTO mapToUserDTO(User user) {
+    private UserResponseDTO mapToUserDTO(User user, User currentUser) {
 
         UserResponseDTO dto = new UserResponseDTO();
         dto.setId(user.getId());
@@ -168,7 +172,16 @@ public class FollowController {
         dto.setName(user.getName());
         dto.setProfilePictureUrl(user.getProfilePictureUrl());
 
+        // CHECK IF CURRENT USER FOLLOWS THIS USER
+        if (currentUser != null) {
+            boolean isFollowing = followRepository
+                    .existsByFollowerAndFollowing(currentUser, user);
+
+            dto.setFollowing(isFollowing);
+        } else {
+            dto.setFollowing(false);
+        }
+
         return dto;
     }
-
 }

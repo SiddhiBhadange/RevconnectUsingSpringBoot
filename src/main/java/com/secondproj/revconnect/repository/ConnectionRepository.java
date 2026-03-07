@@ -14,9 +14,6 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     //  Get pending requests received
     List<Connection> findByReceiverAndStatus(User receiver, String status);
 
-    //  Get pending requests sent
-    List<Connection> findBySenderAndStatus(User sender, String status);
-
     @Query("""
 SELECT c FROM Connection c
 WHERE (c.sender.id = :user1 AND c.receiver.id = :user2)

@@ -22,14 +22,6 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @Autowired
-    private CommentRepository commentRepository;
-
-    @Autowired
-    private NotificationService notificationService;
-
-    @Autowired
-    private PostRepository postRepository;
 
 
     private CommentResponseDTO mapToCommentDTO(Comment comment) {

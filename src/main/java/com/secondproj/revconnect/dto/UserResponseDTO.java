@@ -19,6 +19,15 @@ public class UserResponseDTO {
     private String profilePictureUrl;
     private String location;
     private String website;
+    private boolean isFollowing;
+
+    public boolean isFollowing() {
+        return isFollowing;
+    }
+
+    public void setFollowing(boolean following) {
+        isFollowing = following;
+    }
 
     public String getBusinessCategory() {
         return businessCategory;
