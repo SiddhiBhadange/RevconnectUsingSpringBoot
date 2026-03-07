@@ -14,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
         setHeaders: {
           Authorization: `Bearer ${token}`
         }
-        // ❌ DO NOT ADD withCredentials HERE
+       
       });
       return next.handle(authReq);
     }

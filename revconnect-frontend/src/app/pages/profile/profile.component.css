@@ -773,120 +773,19 @@ button {
   text-decoration: underline;
 }
 
-
-/* ============================= */
-/* MODAL OVERLAY */
-/* ============================= */
-.modal-overlay {
-  position: fixed !important;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
-  background: rgba(0, 0, 0, 0.55);
-
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-
-  z-index: 9999;
-}
-
-
-/* ============================= */
-/* MODAL BOX */
-/* ============================= */
-.modal {
-  position: relative !important;
-  background: #ffffff;
-
-  width: 420px;
-  max-height: 500px;
-
-  border-radius: 16px;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25);
-
-  display: flex;
-  flex-direction: column;
-
-  overflow-y: auto;
-
-  animation: fadeInUp 0.25s ease-out;
-}
-
-
-/* ============================= */
-/* HEADER */
-/* ============================= */
-.modal h3 {
-  margin: 0;
-  padding: 18px 20px;
-  font-size: 18px;
-  font-weight: 600;
-  border-bottom: 1px solid #eee;
-  text-align: center;
-}
-
-
-/* ============================= */
-/* USER ROW */
-/* ============================= */
-.user-row {
-  padding: 12px 20px;
-  border-bottom: 1px solid #f3f4f6;
-  transition: background 0.2s ease;
-}
-
-.user-row:hover {
-  background: #f9fafb;
-}
-
-.user-link {
-  cursor: pointer;
-  font-weight: 500;
-  color: #111827;
-  transition: 0.2s ease;
-}
-
-.user-link:hover {
-  color: #6366f1;
-}
-
-
-/* ============================= */
-/* CLOSE BUTTON */
-/* ============================= */
-.close-btn {
-  margin: 15px auto 20px;
-  padding: 8px 18px;
-  border: none;
-  border-radius: 8px;
-  background: #6366f1;
-  color: white;
-  font-weight: 500;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.close-btn:hover {
-  background: #4f46e5;
-}
-
-
-/* ============================= */
-/* ANIMATION */
-/* ============================= */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
+/* ============================= */ /* MODAL OVERLAY */ /* ============================= */ .modal-overlay 
+{ position: fixed !important;
+   top: 0; left: 0; 
+   width: 100vw; 
+   height: 100vh; 
+   background: rgba(0, 0, 0, 0.55); 
+   display: flex !important; justify-content: center !important; 
+   align-items: center !important; z-index: 9999; } 
+   
+   /* ============================= */ /* MODAL BOX */ /* ============================= */
+    .modal { 
+      position: relative !important; background: #ffffff;
+       width: 420px; max-height: 500px; border-radius: 16px; box-shadow: 0 25px 70px rgba(0, 0, 0, 0.25); display: flex; flex-direction: column; overflow-y: auto; animation: fadeInUp 0.25s ease-out; } /* ============================= */ /* HEADER */ /* ============================= */ .modal h3 { margin: 0; padding: 18px 20px; font-size: 18px; font-weight: 600; border-bottom: 1px solid #eee; text-align: center; } /* ============================= */ /* USER ROW */ /* ============================= */ .user-row { padding: 12px 20px; border-bottom: 1px solid #f3f4f6; transition: background 0.2s ease; } .user-row:hover { background: #f9fafb; } .user-link { cursor: pointer; font-weight: 500; color: #111827; transition: 0.2s ease; } .user-link:hover { color: #6366f1; } /* ============================= */ /* CLOSE BUTTON */ /* ============================= */ .close-btn { margin: 15px auto 20px; padding: 8px 18px; border: none; border-radius: 8px; background: #6366f1; color: white; font-weight: 500; cursor: pointer; transition: 0.2s ease; } .close-btn:hover { background: #4f46e5; } /* ============================= */ /* ANIMATION */ /* ============================= */ @keyframes fadeInUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
 /* ============================= */
 /* EDIT FORM CONTAINER */
 /* ============================= */

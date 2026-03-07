@@ -91,7 +91,7 @@ ngOnInit(): void {
   /* LOAD USER */
 
  loadUserById(id: string) {
-  console.log("🔥 loadUserById called");
+  console.log(" loadUserById called");
 
   this.http.get<any>(`http://localhost:8080/api/users/${id}`)
     .subscribe(user => {
@@ -135,13 +135,11 @@ followUser() {
 
     {},
     { responseType: 'text' }
-  ).subscribe({
-    error: () => {
-      this.isFollowing = false;
+  ).subscribe(() => {
+       this.isFollowing = true;
       this.followersCount--;
-      this.cdr.detectChanges(); // Trigger change detection
-    }
-  });
+      this.cdr.detectChanges(); 
+    });
 }
 
 unfollowUser() {
@@ -153,13 +151,11 @@ unfollowUser() {
 
   this.http.delete(
     `http://localhost:8080/api/follow/${this.user.id}`,{responseType: 'text'}
-  ).subscribe({
-    error: () => {
-      this.isFollowing = true;
+  ).subscribe( () => {
+      this.isFollowing = false;
       this.followersCount++;
-      this.cdr.detectChanges(); // Trigger change detection
-    }
-  });
+      this.cdr.detectChanges();
+    });
 }
   /* CONNECTION */
 
@@ -308,5 +304,33 @@ removeConnection() {
   }
  goToChat() {
   this.router.navigate(['/chat', this.user.id]);
+}
+followUserFromList(userId: number) {
+  this.http.post(
+    `http://localhost:8080/api/follow/${userId}`,
+    {},
+    { responseType: 'text' }
+  ).subscribe(() => {
+
+    const user =
+      this.followers.find(f => f.id === userId) ||
+      this.following.find(f => f.id === userId);
+
+    if (user) user.isFollowing = true;
+  });
+}
+
+unfollowUserFromList(userId: number) {
+  this.http.delete(
+    `http://localhost:8080/api/follow/${userId}`,
+    { responseType: 'text' }
+  ).subscribe(() => {
+
+    const user =
+      this.followers.find(f => f.id === userId) ||
+      this.following.find(f => f.id === userId);
+
+    if (user) user.isFollowing = false;
+  });
 }
 }
