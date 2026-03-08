@@ -18,6 +18,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   private pollingSubscription?: Subscription;
   currentUserId: number | null = null;
 
+  editingPostId: number | null = null;
+  editingPostContent: string = '';
+
   constructor(private postService: PostService,
     private commentService: CommentService,
     private authService: AuthService
@@ -87,6 +90,28 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
     }
   }
+
+  editPost(post: any) {
+    this.editingPostId = post.id;
+    this.editingPostContent = post.content;
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
+    this.editingPostContent = '';
+  }
+
+  saveEdit(post: any) {
+    if (!this.editingPostContent.trim()) return;
+    this.postService.updatePost(post.id, this.editingPostContent).subscribe({
+      next: (updatedPost: any) => {
+        post.content = updatedPost.content;
+        this.editingPostId = null;
+      },
+      error: (err) => console.error('Failed to update post', err)
+    });
+  }
+
   loadPosts() {
     this.postService.getAllPosts().subscribe((data: any) => {
       console.log("POSTS:", data);

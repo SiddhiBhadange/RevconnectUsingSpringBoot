@@ -28,7 +28,32 @@
         <mat-icon>delete</mat-icon>
       </button>
     </div>
-    <p>{{ post.content }}</p>
+    <!-- VIEW MODE -->
+    <div *ngIf="editingPostId !== post.id">
+      <p>{{ post.content }}</p>
+      <div style="margin-bottom: 10px;">
+        <button *ngIf="post.userId === currentUserId"
+          style="background: none; border: none; color: #666; cursor: pointer; text-decoration: underline; font-size: 13px; padding: 0;"
+          (click)="editPost(post)">
+          Edit
+        </button>
+      </div>
+    </div>
+
+    <!-- EDIT MODE -->
+    <div *ngIf="editingPostId === post.id" style="margin-bottom: 15px;">
+      <textarea
+        style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 10px; margin-bottom: 10px; font-family: inherit;"
+        rows="3" [(ngModel)]="editingPostContent"></textarea>
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button
+          style="background: #e4e6eb; color: #333; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: 500;"
+          (click)="cancelEdit()">Cancel</button>
+        <button
+          style="background: #4b5bdc; color: white; border: none; padding: 6px 15px; border-radius: 4px; cursor: pointer; font-weight: 500;"
+          (click)="saveEdit(post)">Save</button>
+      </div>
+    </div>
 
     <!-- <div style="display: flex; justify-content: space-between; align-items: center; color: #666;">
       <small>{{ post.createdAt | date:'short' }}</small>

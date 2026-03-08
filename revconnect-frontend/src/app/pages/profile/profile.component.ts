@@ -32,7 +32,10 @@ export class ProfileComponent implements OnInit {
 
   showFollowersModal = false;
   showFollowingModal = false;
-   selectedRole: string = 'PERSONAL';
+  selectedRole: string = 'PERSONAL';
+
+  editingPostId: number | null = null;
+  editingPostContent: string = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -47,33 +50,33 @@ export class ProfileComponent implements OnInit {
 
 
 
-ngOnInit(): void {
+  ngOnInit(): void {
 
-  this.http.get<any>('http://localhost:8080/api/users/me')
-    .subscribe(me => {
-      this.currentUser = me;
+    this.http.get<any>('http://localhost:8080/api/users/me')
+      .subscribe(me => {
+        this.currentUser = me;
 
-      const idFromUrl = this.route.snapshot.paramMap.get('id');
+        const idFromUrl = this.route.snapshot.paramMap.get('id');
 
-      // 🔥 If no ID in URL, load own profile
-      if (!idFromUrl) {
-        this.loadUserById(me.id);
-        
-      }
-    });
+        // 🔥 If no ID in URL, load own profile
+        if (!idFromUrl) {
+          this.loadUserById(me.id);
 
-  this.route.paramMap
-    .pipe(
-      map(params => params.get('id')),
-      distinctUntilChanged()
-    )
-    .subscribe(id => {
-      if (id) {
-        this.loadUserById(id);
-        
-      }
-    });
-}
+        }
+      });
+
+    this.route.paramMap
+      .pipe(
+        map(params => params.get('id')),
+        distinctUntilChanged()
+      )
+      .subscribe(id => {
+        if (id) {
+          this.loadUserById(id);
+
+        }
+      });
+  }
   /* ROLE CHECKS */
 
   get isBusiness(): boolean {
@@ -90,23 +93,46 @@ ngOnInit(): void {
 
   /* LOAD USER */
 
- loadUserById(id: string) {
-  console.log(" loadUserById called");
+  loadUserById(id: string) {
+    console.log(" loadUserById called");
 
-  this.http.get<any>(`http://localhost:8080/api/users/${id}`)
-    .subscribe(user => {
-      console.log(" user reloaded from backend");
-      this.user = user;
-      this.loadPosts(user.id);
-      this.loadFollowData();
-      this.loadConnectionStatus();
-      this.selectedRole = user.roles?.[0] || 'PERSONAL';
-    });
-}
+    this.http.get<any>(`http://localhost:8080/api/users/${id}`)
+      .subscribe(user => {
+        console.log(" user reloaded from backend");
+        this.user = user;
+        this.loadPosts(user.id);
+        this.loadFollowData();
+        this.loadConnectionStatus();
+        this.selectedRole = user.roles?.[0] || 'PERSONAL';
+      });
+  }
 
   loadPosts(userId: number) {
     this.http.get<any[]>(`http://localhost:8080/api/posts/user/${userId}`)
       .subscribe(posts => this.posts = posts);
+  }
+
+  editPost(post: any) {
+    this.editingPostId = post.id;
+    this.editingPostContent = post.content;
+  }
+
+  cancelEdit() {
+    this.editingPostId = null;
+    this.editingPostContent = '';
+  }
+
+  saveEdit(post: any) {
+    if (!this.editingPostContent.trim()) return;
+    this.http.put(`http://localhost:8080/api/posts/${post.id}`, { content: this.editingPostContent })
+      .subscribe({
+        next: (updatedPost: any) => {
+          post.content = updatedPost.content;
+          this.editingPostId = null;
+          this.cdr.detectChanges();
+        },
+        error: (err) => console.error('Failed to update post', err)
+      });
   }
 
   /* FOLLOW */
@@ -126,125 +152,125 @@ ngOnInit(): void {
     }
   }
 
-followUser() {
-  this.isFollowing = true;
-  this.followersCount++;
+  followUser() {
+    this.isFollowing = true;
+    this.followersCount++;
 
-  this.http.post(
-    `http://localhost:8080/api/follow/${this.user.id}`,
+    this.http.post(
+      `http://localhost:8080/api/follow/${this.user.id}`,
 
-    {},
-    { responseType: 'text' }
-  ).subscribe(() => {
-       this.isFollowing = true;
+      {},
+      { responseType: 'text' }
+    ).subscribe(() => {
+      this.isFollowing = true;
       this.followersCount--;
-      this.cdr.detectChanges(); 
+      this.cdr.detectChanges();
     });
-}
-
-unfollowUser() {
-  this.isFollowing = false;
-
-  if (this.followersCount > 0) {
-    this.followersCount--;
   }
 
-  this.http.delete(
-    `http://localhost:8080/api/follow/${this.user.id}`,{responseType: 'text'}
-  ).subscribe( () => {
+  unfollowUser() {
+    this.isFollowing = false;
+
+    if (this.followersCount > 0) {
+      this.followersCount--;
+    }
+
+    this.http.delete(
+      `http://localhost:8080/api/follow/${this.user.id}`, { responseType: 'text' }
+    ).subscribe(() => {
       this.isFollowing = false;
       this.followersCount++;
       this.cdr.detectChanges();
     });
-}
+  }
   /* CONNECTION */
 
-loadConnectionStatus() {
-  if (this.isOwnProfile() || !this.user?.id) return;
+  loadConnectionStatus() {
+    if (this.isOwnProfile() || !this.user?.id) return;
 
-  this.connectionService.getStatus(this.user.id)
-    .subscribe((res: any) => {
+    this.connectionService.getStatus(this.user.id)
+      .subscribe((res: any) => {
 
-      if (!res || res.status === 'NONE') {
+        if (!res || res.status === 'NONE') {
+          this.connectionStatus = 'NONE';
+          this.pendingRequestId = null;
+          return;
+        }
+
+        this.connectionStatus = res.status;
+
+        if (res.status === 'PENDING_RECEIVED') {
+          this.pendingRequestId = res.id;
+        } else {
+          this.pendingRequestId = null;
+        }
+
+        this.cdr.detectChanges();
+      });
+  }
+
+  acceptRequest() {
+    if (!this.pendingRequestId) return;
+
+    this.connectionService.respond(this.pendingRequestId, 'ACCEPTED')
+      .subscribe(() => {
+        this.connectionStatus = 'CONNECTED';
+        this.pendingRequestId = null;
+        this.cdr.detectChanges();
+      });
+  }
+  rejectRequest() {
+    if (!this.pendingRequestId) return;
+
+    this.connectionService.respond(this.pendingRequestId, 'REJECTED')
+      .subscribe(() => {
         this.connectionStatus = 'NONE';
         this.pendingRequestId = null;
-        return;
-      }
+        this.cdr.detectChanges();
+      });
+  }
 
-      this.connectionStatus = res.status;
+  sendConnectionRequest() {
+    this.connectionStatus = 'PENDING_SENT';
 
-      if (res.status === 'PENDING_RECEIVED') {
-        this.pendingRequestId = res.id;
-      } else {
-        this.pendingRequestId = null;
-      }
+    this.connectionService.sendRequest(this.user.id)
+      .subscribe({
+        error: () => {
+          this.connectionStatus = 'NONE';
+        }
+      });
+  }
 
-      this.cdr.detectChanges();
-    });
-}
-
-acceptRequest() {
-  if (!this.pendingRequestId) return;
-
-  this.connectionService.respond(this.pendingRequestId, 'ACCEPTED')
-    .subscribe(() => {
-      this.connectionStatus = 'CONNECTED';
-      this.pendingRequestId = null;
-      this.cdr.detectChanges();
-    });
-}
-rejectRequest() {
-  if (!this.pendingRequestId) return;
-
-  this.connectionService.respond(this.pendingRequestId, 'REJECTED')
-    .subscribe(() => {
-      this.connectionStatus = 'NONE';
-      this.pendingRequestId = null;
-      this.cdr.detectChanges();
-    });
-}
-
-sendConnectionRequest() {
-  this.connectionStatus = 'PENDING_SENT';
-
-  this.connectionService.sendRequest(this.user.id)
-    .subscribe({
-      error: () => {
+  removeConnection() {
+    this.connectionService.removeConnection(this.user.id)
+      .subscribe(() => {
         this.connectionStatus = 'NONE';
-      }
-    });
-}
-
-removeConnection() {
-  this.connectionService.removeConnection(this.user.id)
-    .subscribe(() => {
-      this.connectionStatus = 'NONE';
-      this.cdr.detectChanges();
-    });
-}
+        this.cdr.detectChanges();
+      });
+  }
 
   /* PROFILE */
 
   saveProfile() {
 
-  // THIS LINE WAS MISSING
-  this.user.roles = [this.selectedRole];
+    // THIS LINE WAS MISSING
+    this.user.roles = [this.selectedRole];
 
-  this.http.put(
-    'http://localhost:8080/api/users/me',
-    this.user,
-  ).subscribe({
-    next: (updatedUser) => {
-      console.log("Updated:", updatedUser);
-      this.user = updatedUser;
-      this.activeTab = 'about';
-      this.cdr.detectChanges(); // Trigger change detection
-    },
-    error: (err) => {
-      console.error("Update failed:", err);
-    }
-  });
-}
+    this.http.put(
+      'http://localhost:8080/api/users/me',
+      this.user,
+    ).subscribe({
+      next: (updatedUser) => {
+        console.log("Updated:", updatedUser);
+        this.user = updatedUser;
+        this.activeTab = 'about';
+        this.cdr.detectChanges(); // Trigger change detection
+      },
+      error: (err) => {
+        console.error("Update failed:", err);
+      }
+    });
+  }
 
   isOwnProfile(): boolean {
     return this.currentUser?.id === this.user?.id;
@@ -302,35 +328,35 @@ removeConnection() {
     this.showFollowingModal = false;
     this.router.navigate(['/profile', userId]);
   }
- goToChat() {
-  this.router.navigate(['/chat', this.user.id]);
-}
-followUserFromList(userId: number) {
-  this.http.post(
-    `http://localhost:8080/api/follow/${userId}`,
-    {},
-    { responseType: 'text' }
-  ).subscribe(() => {
+  goToChat() {
+    this.router.navigate(['/chat', this.user.id]);
+  }
+  followUserFromList(userId: number) {
+    this.http.post(
+      `http://localhost:8080/api/follow/${userId}`,
+      {},
+      { responseType: 'text' }
+    ).subscribe(() => {
 
-    const user =
-      this.followers.find(f => f.id === userId) ||
-      this.following.find(f => f.id === userId);
+      const user =
+        this.followers.find(f => f.id === userId) ||
+        this.following.find(f => f.id === userId);
 
-    if (user) user.isFollowing = true;
-  });
-}
+      if (user) user.isFollowing = true;
+    });
+  }
 
-unfollowUserFromList(userId: number) {
-  this.http.delete(
-    `http://localhost:8080/api/follow/${userId}`,
-    { responseType: 'text' }
-  ).subscribe(() => {
+  unfollowUserFromList(userId: number) {
+    this.http.delete(
+      `http://localhost:8080/api/follow/${userId}`,
+      { responseType: 'text' }
+    ).subscribe(() => {
 
-    const user =
-      this.followers.find(f => f.id === userId) ||
-      this.following.find(f => f.id === userId);
+      const user =
+        this.followers.find(f => f.id === userId) ||
+        this.following.find(f => f.id === userId);
 
-    if (user) user.isFollowing = false;
-  });
-}
+      if (user) user.isFollowing = false;
+    });
+  }
 }

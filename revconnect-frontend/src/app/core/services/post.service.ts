@@ -25,6 +25,13 @@ export class PostService {
       { responseType: 'text' }
     );
   }
+
+  updatePost(postId: number, content: string) {
+    return this.http.put(
+      `${this.API_URL}/${postId}`,
+      { content }
+    );
+  }
   likePost(postId: number) {
     return this.http.post(
       `http://localhost:8080/api/likes/${postId}`,
