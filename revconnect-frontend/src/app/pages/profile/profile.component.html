@@ -6,20 +6,30 @@
 
     <div class="profile-header">
 
-      <!-- IMAGE -->
+      <!-- PROFILE IMAGE -->
       <img *ngIf="user?.profilePictureUrl"
-           [src]="user?.profilePictureUrl"
+           [src]="user.profilePictureUrl"
            class="profile-img" />
+
+      <div *ngIf="!user?.profilePictureUrl"
+           class="profile-img placeholder">
+        👤
+      </div>
 
       <!-- INFO -->
       <div class="profile-info">
 
         <div class="name-row">
-          <h2>{{ user?.name || user?.username }}</h2>
+          <h2>
+            {{ user?.name || user?.username }}
+
+            <span *ngIf="isBusiness" class="badge business">Business</span>
+            <span *ngIf="isCreator" class="badge creator">Creator</span>
+            <span *ngIf="isAdmin" class="badge admin">Admin</span>
+          </h2>
 
           <div *ngIf="!isOwnProfile()" class="action-section">
 
-            <!-- FOLLOW -->
             <button *ngIf="!isFollowing"
                     class="follow-btn"
                     (click)="followUser()">
@@ -32,41 +42,35 @@
               Following
             </button>
 
-            <!-- CONNECTION STATES -->
-
-            <!-- CONNECT -->
             <button *ngIf="connectionStatus === 'NONE'"
                     class="connect-btn"
                     (click)="sendConnectionRequest()">
               Connect
             </button>
 
-            <!-- PENDING -->
             <button *ngIf="connectionStatus === 'PENDING_SENT'"
                     class="pending-btn"
                     disabled>
               Pending
             </button>
 
-            <!-- RECEIVED -->
-            <div *ngIf="connectionStatus === 'PENDING_RECEIVED'" class="request-actions">
-              <button class="accept-btn"
-                      (click)="acceptRequest()">
-                Accept
-              </button>
-
-              <button class="reject-btn"
-                      (click)="rejectRequest()">
-                Reject
-              </button>
+            <div *ngIf="connectionStatus === 'PENDING_RECEIVED'"
+                 class="request-actions">
+              <button (click)="acceptRequest()">Accept</button>
+              <button (click)="rejectRequest()">Reject</button>
             </div>
 
-            <!-- CONNECTED -->
-        <button *ngIf="connectionStatus === 'CONNECTED'"
-        class="connected-btn"
-        (click)="removeConnection()">
-               disconnect
-              </button>
+            <button *ngIf="connectionStatus === 'CONNECTED'"
+                    class="connected-btn"
+                    (click)="removeConnection()">
+              Disconnect
+            </button>
+
+            <button class="message-btn"
+                    (click)="goToChat()">
+              Message
+            </button>
+
           </div>
         </div>
 
@@ -78,62 +82,152 @@
           {{ user?.location || 'Location not added' }}
         </p>
 
+        <!-- BUSINESS PUBLIC INFO -->
+        <div *ngIf="isBusiness || isCreator" class="business-info">
+
+          <p *ngIf="user?.businessCategory">
+            <strong>Category:</strong> {{ user.businessCategory }}
+          </p>
+
+          <p *ngIf="user?.businessAddress">
+            <strong>Address:</strong> {{ user.businessAddress }}
+          </p>
+
+          <p *ngIf="user?.businessHours">
+            <strong>Hours:</strong> {{ user.businessHours }}
+          </p>
+
+          <p *ngIf="user?.contactInfo">
+            <strong>Contact:</strong> {{ user.contactInfo }}
+          </p>
+
+        </div>
+
+        <!-- STATS -->
         <div class="stats">
-          <span class="clickable"
-                (click)="showFollowersModal = true">
+          <span class="stat-link" (click)="openFollowers()">
             <strong>{{ followersCount || 0 }}</strong> Followers
           </span>
 
-          <span class="clickable"
-                (click)="showFollowingModal = true">
+          <span class="stat-link" (click)="openFollowing()">
             <strong>{{ followingCount || 0 }}</strong> Following
           </span>
         </div>
 
+        <!-- FOLLOWERS MODAL -->
+        <div class="modal-overlay" *ngIf="showFollowersModal">
+          <div class="modal">
+            <h3>Followers</h3>
+
+            <div *ngFor="let f of followers"
+                 class="user-item"
+                 (click)="goToProfile(f.id)">
+              {{ f.name || f.username }}
+            </div>
+
+            <button class="close-btn"
+                    (click)="showFollowersModal = false">
+              Close
+            </button>
+          </div>
+        </div>
+
+        <!-- FOLLOWING MODAL -->
+        <div class="modal-overlay" *ngIf="showFollowingModal">
+          <div class="modal">
+            <h3>Following</h3>
+
+            <div *ngFor="let f of following"
+                 class="user-item"
+                 (click)="goToProfile(f.id)">
+              {{ f.name || f.username }}
+            </div>
+
+            <button class="close-btn"
+                    (click)="showFollowingModal = false">
+              Close
+            </button>
+          </div>
       </div>
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button [class.active]="activeTab === 'about'"
-            (click)="activeTab = 'about'">About</button>
+</div>
 
-    <button [class.active]="activeTab === 'posts'"
-            (click)="activeTab = 'posts'">Posts</button>
+<!-- TABS -->
+<div class="tabs">
+  <button [class.active]="activeTab === 'about'"
+          (click)="activeTab = 'about'">
+    About
+  </button>
 
-    <button *ngIf="isOwnProfile()"
-            [class.active]="activeTab === 'edit'"
-            (click)="activeTab = 'edit'">Edit</button>
+  <button [class.active]="activeTab === 'posts'"
+          (click)="activeTab = 'posts'">
+    Posts
+  </button>
+
+  <button *ngIf="isOwnProfile()"
+          [class.active]="activeTab === 'edit'"
+          (click)="activeTab = 'edit'">
+    Edit
+  </button>
+</div>
+
+<!-- CONTENT -->
+<div class="tab-content">
+
+  <!-- ABOUT -->
+  <div *ngIf="activeTab === 'about'">
+    <p><strong>Email:</strong> {{ user?.email }}</p>
+    <p><strong>Website:</strong> {{ user?.website || 'Not added' }}</p>
   </div>
 
-  <!-- CONTENT -->
-  <div class="tab-content">
+  <!-- POSTS -->
+  <div *ngIf="activeTab === 'posts'">
+    <div class="post-card" *ngFor="let post of posts">
+      <p>{{ post.content }}</p>
+      <small>{{ post.createdAt | date:'medium' }}</small>
+    </div>
+  </div>
 
-    <div *ngIf="activeTab === 'about'">
-      <p><strong>Email:</strong> {{ user?.email }}</p>
-      <p><strong>Website:</strong> {{ user?.website || 'Not added' }}</p>
-      <p><strong>Role:</strong> {{ user?.roles }}</p>
+  <!-- EDIT -->
+  <div *ngIf="activeTab === 'edit'" class="edit-form">
+
+    <h3>Basic Information</h3>
+
+    <input [(ngModel)]="user.name" placeholder="Name" />
+    <input [(ngModel)]="user.bio" placeholder="Headline" />
+    <input [(ngModel)]="user.location" placeholder="Location" />
+    <input [(ngModel)]="user.website" placeholder="Website" />
+
+    <!-- ROLE SELECTION -->
+    <h3>Account Type</h3>
+    <select [(ngModel)]="selectedRole">
+      <option value="PERSONAL">Personal</option>
+      <option value="CREATOR">Creator</option>
+      <option value="BUSINESS">Business</option>
+    </select>
+
+    <!-- BUSINESS EDIT -->
+    <div *ngIf="selectedRole === 'BUSINESS' || selectedRole === 'CREATOR'">
+
+      <h3>Business / Creator Details</h3>
+
+      <input [(ngModel)]="user.businessCategory" placeholder="Category" />
+      <input [(ngModel)]="user.businessAddress" placeholder="Address" />
+      <input [(ngModel)]="user.businessHours" placeholder="Business Hours" />
+      <input [(ngModel)]="user.contactInfo" placeholder="Contact Info" />
+
     </div>
 
-    <div *ngIf="activeTab === 'posts'">
-      <div class="post-card" *ngFor="let post of posts">
-        <p>{{ post.content }}</p>
-        <small>{{ post.createdAt | date:'medium' }}</small>
-      </div>
-    </div>
+    <button class="save-btn" (click)="saveProfile()">
+      Save Changes
+    </button>
 
-    <div *ngIf="activeTab === 'edit'">
-      <input [(ngModel)]="user.name" placeholder="Name" />
-      <input [(ngModel)]="user.bio" placeholder="Headline" />
-      <input [(ngModel)]="user.location" placeholder="Location" />
-      <input [(ngModel)]="user.website" placeholder="Website" />
-      <input [(ngModel)]="user.profilePictureUrl" placeholder="Profile Image URL" />
-
-      <button class="save-btn" (click)="saveProfile()">
-        Save Changes
-      </button>
-    </div>
+    <button class="delete-profile-btn" (click)="deleteProfile()">
+      Delete Profile
+    </button>
 
   </div>
+
 </div>

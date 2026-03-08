@@ -15,8 +15,7 @@ export class ConnectionService {
   sendRequest(userId: number): Observable<any> {
     return this.http.post(
       `${this.API}/request/${userId}`,
-      {},
-      { withCredentials: true }   // ✅ IMPORTANT
+      {},{responseType: 'text'}
     );
   }
 
@@ -24,38 +23,32 @@ export class ConnectionService {
   respond(requestId: number, status: string): Observable<any> {
     return this.http.post(
       `${this.API}/respond/${requestId}?status=${status}`,
-      {},
-      { withCredentials: true }   // ✅ IMPORTANT
+      {},{responseType: 'text'}
     );
   }
 
   // Get pending requests
   getPending(): Observable<any> {
     return this.http.get(
-      `${this.API}/pending`,
-      { withCredentials: true }   // ✅ IMPORTANT
+      `${this.API}/pending`
     );
   }
 
   // Get connection status with specific user
   getStatus(userId: number): Observable<any> {
     return this.http.get(
-      `${this.API}/status/${userId}`,
-      { withCredentials: true }   // ✅ IMPORTANT
+      `${this.API}/status/${userId}`
     );
   }
 
   // Get all connections
-  getConnections(): Observable<any> {
-    return this.http.get(
-      `${this.API}`,
-      { withCredentials: true }   // ✅ IMPORTANT
-    );
-  }
+getConnections(): Observable<any> {
+  return this.http.get(`${this.API}`);
+}
   removeConnection(userId: number) {
   return this.http.delete(
     `${this.API}/remove/${userId}`,
-    { withCredentials: true }
+    { responseType: 'text' }
   );
 }
 }

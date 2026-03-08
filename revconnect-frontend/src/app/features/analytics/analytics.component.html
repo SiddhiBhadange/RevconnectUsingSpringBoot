@@ -1,0 +1,46 @@
+<div class="analytics-container" *ngIf="analytics">
+
+  <div class="analytics-title">
+    My Analytics Dashboard
+  </div>
+
+  <div class="analytics-grid">
+
+   <div class="analytics-card">
+  <div class="analytics-label">Total Posts</div>
+  <div class="analytics-number">{{ analytics.totalPosts }}</div>
+  <div class="mini-bar">
+    <div class="mini-fill" 
+         [style.width.%]="analytics.totalPosts * 5">
+    </div>
+  </div>
+</div>
+
+    <div class="analytics-card">
+      <div class="analytics-label">Followers</div>
+      <div class="analytics-number">{{ analytics.followers }}</div>
+    </div>
+
+    <div class="analytics-card">
+      <div class="analytics-label">Following</div>
+      <div class="analytics-number">{{ analytics.following }}</div>
+    </div>
+
+    <div class="analytics-card">
+      <div class="analytics-label">Connections</div>
+      <div class="analytics-number">{{ analytics.connections }}</div>
+    </div>
+
+    <div class="analytics-card">
+      <div class="analytics-label">Total Notifications</div>
+      <div class="analytics-number">{{ analytics.totalNotifications }}</div>
+    </div>
+
+    <div class="analytics-card">
+      <div class="analytics-label">Unread Notifications</div>
+      <div class="analytics-number">{{ analytics.unreadNotifications }}</div>
+    </div>
+
+  </div>
+
+</div>
