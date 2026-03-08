@@ -10,5 +10,4 @@ public class RevconnectApplication {
 
         SpringApplication.run(RevconnectApplication.class, args);
     }
-
 }
